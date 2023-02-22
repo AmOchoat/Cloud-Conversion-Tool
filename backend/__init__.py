@@ -3,9 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
-
 jwt = JWTManager()
-
 
 def create_app(config_name):
     app = Flask(__name__)  
