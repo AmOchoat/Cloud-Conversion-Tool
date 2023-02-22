@@ -2,6 +2,7 @@ from flask import request
 from ..modelos import db, Usuario, UsuarioSchema
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import jwt_required, create_access_token
 
 usuario_schema = UsuarioSchema()
 
@@ -43,8 +44,9 @@ class VistaLogIn(Resource):
         u_contrasena = request.json["contrasena"]
         usuario = Usuario.query.filter_by(
             nombre=u_nombre, contrasena=u_contrasena).all()
+        access_token= create_access_token(identity=request.json['name'])
         if usuario:
-            return {'mensaje': 'Inicio de sesión exitoso'}, 200
+            return {'user':usuario_schema.dump(usuario),'access_token':access_token}
         else:
             return {'mensaje': 'Nombre de usuario o contraseña incorrectos'}, 401
 
@@ -57,9 +59,10 @@ class VistaSignIn(Resource):
             contrasena=request.json["contrasena"],
             email=request.json["email"]
         )
+        access_token= create_access_token(identity=request.json['nombre'])
         db.session.add(nuevo_usuario)
         db.session.commit()
-        return 'Usuario creado exitosamente', 201
+        return {'user':usuario_schema.dump(nuevo_usuario),'access_token':access_token}
 
     def put(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
@@ -73,6 +76,12 @@ class VistaSignIn(Resource):
         db.session.commit()
         return '', 204
 
+class VistaUploadTask(Resource):
+    def post(self):
+        file = request.files['file']
+        file.save('uploads/' + file.filename)
+        return 'File uploaded successfully'
+    
 # class VistaAlbumsUsuario(Resource):
 
 #     def post(self, id_usuario):
