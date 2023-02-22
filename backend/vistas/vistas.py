@@ -14,10 +14,10 @@ class VistaLogIn(Resource):
         u_nombre = request.json["nombre"]
         u_contrasena = request.json["contrasena"]
         usuario = Usuario.query.filter_by(
-            nombre=u_nombre, contrasena=u_contrasena).all()
-        access_token= create_access_token(identity=request.json['name'])
+            nombre=u_nombre, contrasena=u_contrasena).first()
+        access_token= create_access_token(identity=request.json['nombre'])
         if usuario:
-            return {'user':usuario_schema.dump(usuario),'access_token':access_token}
+            return {'usuario':usuario_schema.dump(usuario),'access_token':access_token}
         else:
             return {'mensaje': 'Nombre de usuario o contraseña incorrectos'}, 401
 
@@ -25,7 +25,7 @@ class VistaLogIn(Resource):
 class VistaSignIn(Resource):
 
     def post(self):
-        if request.json["contrasena"] == request.json["contrasena_conf"]:
+        if request.json["contrasena"] == request.json["contrasena"]:
             nuevo_usuario = Usuario(
                 nombre=request.json["nombre"],
                 contrasena=request.json["contrasena"],
@@ -57,14 +57,16 @@ class VistaTasks(Resource):
         _, extension = os.path.splitext(file.filename)
         file.save('uploads/' + file.filename)
         nueva_tarea= Tarea(
-            nombre=request.json['nombre'],
+            nombre=request.form.get('nombre'),
             extension_original=extension,
-            extension_convertir=request.json['extension_convertir'],
-            fecha=datetime.datetime.now()
+            estado="uploaded",
+            extension_convertir=request.form.get('extension_convertir'),
+            fecha=datetime.datetime.now(),
+            user=id_user
         )
         usuario = Usuario.query.get_or_404(id_user)
         usuario.tareas.append(nueva_tarea)
-        return 'File uploaded successfully'
+        return {"tarea":tarea_schema.dump(nueva_tarea)}
     @jwt_required()
     def get(self):
         return [tarea_schema.dump(tarea) for tarea in Tarea.query.all()]
