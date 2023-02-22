@@ -1,5 +1,5 @@
 from flask import request
-from ..modelos import db, Usuario, UsuarioSchema, TareaSchema
+from ..modelos import *
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token
@@ -23,15 +23,18 @@ class VistaLogIn(Resource):
 class VistaSignIn(Resource):
 
     def post(self):
-        nuevo_usuario = Usuario(
-            nombre=request.json["nombre"],
-            contrasena=request.json["contrasena"],
-            email=request.json["email"]
-        )
-        access_token= create_access_token(identity=request.json['nombre'])
-        db.session.add(nuevo_usuario)
-        db.session.commit()
-        return {'user':usuario_schema.dump(nuevo_usuario),'access_token':access_token}
+        if request.json["contrasena"] == request.json["contrasena_conf"]:
+            nuevo_usuario = Usuario(
+                nombre=request.json["nombre"],
+                contrasena=request.json["contrasena"],
+                email=request.json["email"]
+            )
+            access_token= create_access_token(identity=request.json['nombre'])
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+            return {'user':usuario_schema.dump(nuevo_usuario),'access_token':access_token}
+        else:
+            return {'mensaje':"La contraseña no es igual a la de confirmación."}
 
     def put(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
@@ -45,8 +48,24 @@ class VistaSignIn(Resource):
         db.session.commit()
         return '', 204
 
-class VistaUploadTask(Resource):
+class VistaTasks(Resource):
+    @jwt_required()
     def post(self):
         file = request.files['file']
         file.save('uploads/' + file.filename)
         return 'File uploaded successfully'
+    @jwt_required()
+    def get(self):
+        return [tarea_schema.dump(tarea) for tarea in Tarea.query.all()]
+
+class VistaTask(Resource):
+    @jwt_required()
+    def get(self,id_task):
+        return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+    @jwt_required()    
+    def delete(self,id_task):
+        task = Tarea.query.get_or_404(id_task)
+        db.session.delete(task)
+        db.session.commit()
+        return '',204
+    

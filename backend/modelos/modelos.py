@@ -8,7 +8,7 @@ db = SQLAlchemy()
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50))
+    nombre = db.Column(db.String(50), unique=True)
     contrasena = db.Column(db.String(50))
     email = db.Column(db.String(80), unique=True)
     tareas = db.relationship('Tarea', cascade='all, delete, delete-orphan')
