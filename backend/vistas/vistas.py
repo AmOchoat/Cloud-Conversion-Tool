@@ -9,7 +9,7 @@ import datetime
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
 
-class VistaLogIn(Resource):
+class VistaSignIn(Resource):
     def post(self):
         u_nombre = request.json["nombre"]
         u_contrasena = request.json["contrasena"]
@@ -22,10 +22,10 @@ class VistaLogIn(Resource):
             return {'mensaje': 'Nombre de usuario o contraseña incorrectos'}, 401
 
 
-class VistaSignIn(Resource):
+class VistaSignUp(Resource):
 
     def post(self):
-        if request.json["contrasena"] == request.json["contrasena"]:
+        if request.json["contrasena"] == request.json["contrasena_con"]:
             nuevo_usuario = Usuario(
                 nombre=request.json["nombre"],
                 contrasena=request.json["contrasena"],
