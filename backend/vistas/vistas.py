@@ -1,8 +1,10 @@
 from flask import request
-from ..modelos import *
+from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token
+import os
+import datetime
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
@@ -50,9 +52,18 @@ class VistaSignIn(Resource):
 
 class VistaTasks(Resource):
     @jwt_required()
-    def post(self):
+    def post(self,id_user):
         file = request.files['file']
+        _, extension = os.path.splitext(file.filename)
         file.save('uploads/' + file.filename)
+        nueva_tarea= Tarea(
+            nombre=request.json['nombre'],
+            extension_original=extension,
+            extension_convertir=request.json['extension_convertir'],
+            fecha=datetime.datetime.now()
+        )
+        usuario = Usuario.query.get_or_404(id_user)
+        usuario.tareas.append(nueva_tarea)
         return 'File uploaded successfully'
     @jwt_required()
     def get(self):
