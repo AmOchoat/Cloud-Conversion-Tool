@@ -1,22 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import fields
+from flask_marshmallow import Marshmallow
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import enum
 
-# testcommit
 db = SQLAlchemy()
-
-class Tarea(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50))
-    extension_original = db.Column(db.String(20))
-    extension_convertir = db.Column(db.String(20))
-    estado = db.Column(db.String(50), nullable = False)
-    fecha = db.Column(db.DateTime(), default = datetime.now())
-    user = db.Column(db.String(80) ,db.ForeignKey('usuario.email'))
+ma = Marshmallow()
 
 class Usuario(db.Model):
     nombre = db.Column(db.String(50), unique = True)
@@ -36,14 +27,19 @@ class Usuario(db.Model):
         '''
         return check_password_hash(self.password, clave)
 
-class UsuarioSchema(SQLAlchemyAutoSchema):
+class Tarea(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    nombre = db.Column(db.String(50))
+    extension_original = db.Column(db.String(20))
+    extension_convertir = db.Column(db.String(20))
+    estado = db.Column(db.String(50), nullable = False)
+    fecha = db.Column(db.DateTime(), default = datetime.now())
+    usuarios = db.Column(db.String(80) ,db.ForeignKey('usuario.email'))
+         
+class UsuarioSchema(ma.Schema):
     class Meta:
-         model = Usuario
-         include_relationships = True
-         load_instance = True
+         fields = ("nombre", "password", "email")
 
-class TareaSchema(SQLAlchemyAutoSchema):
+class TareaSchema(ma.Schema):
     class Meta:
-         model = Tarea
-         include_relationships = True
-         load_instance = True
+         fields = ("nombre", "extension_original", "extension_convertir", "estado", "fecha")
