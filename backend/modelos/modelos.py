@@ -1,6 +1,8 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import fields
+from datetime import datetime
 import enum
 
 # testcommit
@@ -11,16 +13,28 @@ class Tarea(db.Model):
     nombre = db.Column(db.String(50))
     extension_original = db.Column(db.String(20))
     extension_convertir = db.Column(db.String(20))
-    estado=db.Column(db.String(50),nullable=False)
-    fecha= db.Column(db.DateTime)
-    user = db.Column(db.Integer,db.ForeignKey('usuario.id'), nullable=False)
+    estado=db.Column(db.String(50), nullable = False)
+    fecha= db.Column(db.DateTime(), default = datetime.now())
+    user = db.Column(db.String,db.ForeignKey('usuario.email'), nullable=False)
 
 class Usuario(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), unique=True)
-    contrasena = db.Column(db.String(50))
-    email = db.Column(db.String(80), unique=True)
-    tareas = db.relationship('Tarea', backref = 'usuario',lazy=True,cascade='all, delete, delete-orphan')
+    password = db.Column(db.String(150))
+    email = db.Column(db.String(80), primary_key=True)
+    tareas = db.relationship('Tarea', cascade='all, delete,  delete-orphan')
+
+    def hashear_clave(self):
+        '''
+        Hashea la clave en la base de datos
+        '''
+        self.password = generate_password_hash(self.password, 'sha256')
+
+    def verificar_clave(self, clave):
+        '''
+        Verifica la clave hasheada con la del parámetro
+        '''
+        return check_password_hash(self.password, clave)
+
 
 class TareaSchema(SQLAlchemyAutoSchema):
     class Meta:

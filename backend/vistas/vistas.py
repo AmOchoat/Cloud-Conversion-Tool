@@ -1,42 +1,78 @@
+import os
+from datetime import timedelta
 from flask import request
-from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token
-import os
-import datetime
+
+from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
 
+'''
+Login de un Usuario
+'''
 class VistaSignIn(Resource):
     def post(self):
-        u_nombre = request.json["nombre"]
-        u_contrasena = request.json["contrasena"]
-        usuario = Usuario.query.filter_by(
-            nombre=u_nombre, contrasena=u_contrasena).first()
-        access_token= create_access_token(identity=request.json['nombre'])
-        if usuario:
-            return {'usuario':usuario_schema.dump(usuario),'access_token':access_token}
-        else:
-            return {'mensaje': 'Nombre de usuario o contraseña incorrectos'}, 401
+        request.get_json(force=True)
+        usuario = Usuario.query.get(request.json['email'])
+        
+        if usuario is None:
+            return {'message':'El email ingresado no está registrado'}, 400
+        
+        if not usuario.verificar_clave(request.json['password']):
+            return {'message': 'Contraseña incorrecta'}, 400
+        
+        try:
+            access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
+            return {
+                'message':'Sesion iniciada',
+                'access_token':access_token
+            }
+        
+        except:
+            return {'message':'Ha ocurrido un error'}, 500
 
-
+'''
+Registro de un usuario
+'''
 class VistaSignUp(Resource):
 
     def post(self):
-        if request.json["contrasena"] == request.json["contrasena_con"]:
-            nuevo_usuario = Usuario(
-                nombre=request.json["nombre"],
-                contrasena=request.json["contrasena"],
-                email=request.json["email"]
-            )
-            access_token= create_access_token(identity=request.json['nombre'])
+
+        if Usuario.query.filter_by(email=request.json['email']).first() is not None:
+            return {'message': f'El correo({request.json["email"]}) ya está registrado'}, 400
+        
+        if Usuario.query.filter_by(nombre=request.json['nombre']).first() is not None:
+            return {'message': f'El nombre de usuario ({request.json["nombre"]}) ya está registrado'}, 400
+        
+        if request.json['email'] == '' or request.json['password'] == '' or request.json['password_confirmation'] == '' or request.json['nombre'] == '':
+            return {'message': 'Campos invalidos'}, 400
+
+        if request.json["password"] != request.json["password_confirmation"]:
+            return {'mensaje':"La contraseña no es igual a la de confirmación."}
+        
+        nuevo_usuario = Usuario(
+            nombre = request.json["nombre"],
+            password = request.json["password"],
+            email = request.json["email"]
+        )
+
+        nuevo_usuario.hashear_clave()
+        
+        try:
             db.session.add(nuevo_usuario)
             db.session.commit()
-            return {'user':usuario_schema.dump(nuevo_usuario),'access_token':access_token}
-        else:
-            return {'mensaje':"La contraseña no es igual a la de confirmación."}
+            access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
+            return {
+                'message': f'El correo {request.json["email"]} ha sido registrado',
+                'access_token': access_token 
+            }
+
+        except Exception as e:
+            print(e)
+            return {'message':'Ha ocurrido un error'}, 500            
 
     def put(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
