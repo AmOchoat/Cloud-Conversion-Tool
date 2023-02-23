@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import *
 from flask import request
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -79,6 +79,9 @@ class VistaSignUp(Resource):
         usuario.contrasena = request.json.get("contrasena", usuario.contrasena)
         db.session.commit()
         return usuario_schema.dump(usuario)
+    
+    def get(self):
+        return [usuario_schema.dump(usuario) for usuario in Usuario.query.all()]
 
     def delete(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
