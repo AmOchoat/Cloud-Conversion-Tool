@@ -16,7 +16,7 @@ api = Api(app)
 api.add_resource(VistaSignIn, '/api/auth/login')
 api.add_resource(VistaSignUp, '/api/auth/signup')
 api.add_resource(VistaGETTasks, '/api/tasks')
-api.add_resource(VistaPOSTTasks, '/api/tasks/<int:id_user>')
+api.add_resource(VistaPOSTTasks, '/api/tasks/<string:nombre_usuario>')
 api.add_resource(VistaTask, '/api/tasks/<int:id_task>')
 
 app.config['JWT_SECRET_KEY'] = "SuperSecret"

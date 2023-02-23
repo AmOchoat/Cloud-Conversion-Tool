@@ -91,7 +91,7 @@ class VistaSignUp(Resource):
 
 class VistaPOSTTasks(Resource):
     @jwt_required()
-    def post(self,id_user):
+    def post(self,nombre_usuario):
         file = request.files['file']
         _, extension = os.path.splitext(file.filename)
         file.save('uploads/' + file.filename)
@@ -101,9 +101,9 @@ class VistaPOSTTasks(Resource):
             estado="uploaded",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
-            user=id_user
+            user=nombre_usuario
         )
-        usuario = Usuario.query.get_or_404(id_user)
+        usuario = Usuario.query.get_or_404(nombre_usuario)
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
     
