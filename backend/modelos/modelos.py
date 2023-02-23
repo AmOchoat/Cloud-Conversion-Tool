@@ -41,3 +41,9 @@ class UsuarioSchema(SQLAlchemyAutoSchema):
          model = Usuario
          include_relationships = True
          load_instance = True
+
+class TareaSchema(SQLAlchemyAutoSchema):
+    class Meta:
+         model = Tarea
+         include_relationships = True
+         load_instance = True

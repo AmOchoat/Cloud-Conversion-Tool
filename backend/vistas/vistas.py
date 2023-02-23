@@ -89,7 +89,7 @@ class VistaSignUp(Resource):
         db.session.commit()
         return '', 204
 
-class VistaTasks(Resource):
+class VistaPOSTTasks(Resource):
     @jwt_required()
     def post(self,id_user):
         file = request.files['file']
@@ -100,13 +100,14 @@ class VistaTasks(Resource):
             extension_original=extension,
             estado="uploaded",
             extension_convertir=request.form.get('extension_convertir'),
-            fecha=datetime.datetime.now(),
+            fecha=datetime.now(),
             user=id_user
         )
         usuario = Usuario.query.get_or_404(id_user)
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
     
+class VistaGETTasks(Resource):
     @jwt_required()
     def get(self):
         return [tarea_schema.dump(tarea) for tarea in Tarea.query.all()]
