@@ -19,5 +19,4 @@ def create_app(config_name):
 
     jwt.init_app(app)
 
-
     return app

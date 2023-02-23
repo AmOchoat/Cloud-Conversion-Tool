@@ -1,5 +1,5 @@
 import os
-from datetime import *
+from datetime import timedelta, datetime
 from flask import request
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -106,6 +106,7 @@ class VistaTasks(Resource):
         usuario = Usuario.query.get_or_404(id_user)
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
+    
     @jwt_required()
     def get(self):
         return [tarea_schema.dump(tarea) for tarea in Tarea.query.all()]
