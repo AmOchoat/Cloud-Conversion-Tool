@@ -112,7 +112,7 @@ class VistaTasks(Resource):
             extension_original=extension,
             estado="uploaded",
             nombre_archivo_ori=nombre_arch,
-            nombre_archivo_final=nombre_arch+"-compressed",
+            nombre_archivo_final=nombre_arch+"compressed",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
             usuarios=get_jwt_identity()
