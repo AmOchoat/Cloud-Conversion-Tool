@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
+from flask_cors import CORS, cross_origin
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
@@ -38,7 +39,7 @@ class VistaSignIn(Resource):
 Registro de un usuario
 '''
 class VistaSignUp(Resource):
-
+    @cross_origin()
     def post(self):
 
         if Usuario.query.filter_by(email=request.json['email']).first() is not None:
