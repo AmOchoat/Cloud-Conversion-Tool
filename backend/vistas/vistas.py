@@ -100,12 +100,13 @@ class VistaTasks(Resource):
     @jwt_required()
     def post(self):
         file = request.files['file']
-        _, extension = os.path.splitext(file.filename)
+        nombre_arch, extension = os.path.splitext(file.filename)
         file.save('uploads/' + file.filename)
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
             extension_original=extension,
             estado="uploaded",
+            nombre_archivo=nombre_arch,
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
             usuarios=get_jwt_identity()
@@ -141,3 +142,7 @@ class VistaTask(Resource):
         db.session.commit()
         return '',204
     
+# class VistaFile(Resource):
+#     @jwt_required()
+#     def get(self,id_task):
+#         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
