@@ -7,6 +7,7 @@ from sqlalchemy import desc, asc, or_, and_
 from flask import send_file
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
+from flask_cors import CORS, cross_origin
 from ..tareas import comprimir_zip
 
 usuario_schema = UsuarioSchema()
@@ -16,6 +17,7 @@ tarea_schema = TareaSchema()
 Login de un Usuario
 '''
 class VistaSignIn(Resource):
+    @cross_origin()
     def post(self):
         request.get_json(force=True)
         usuario = Usuario.query.get(request.json['email'])
@@ -30,7 +32,8 @@ class VistaSignIn(Resource):
             access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
             return {
                 'message':'Sesion iniciada',
-                'access_token':access_token
+                'access_token':access_token,
+                 'usuario': usuario_schema.dump(usuario)
             }
         
         except:
@@ -40,7 +43,7 @@ class VistaSignIn(Resource):
 Registro de un usuario
 '''
 class VistaSignUp(Resource):
-
+    @cross_origin()
     def post(self):
 
         if Usuario.query.filter_by(email=request.json['email']).first() is not None:
@@ -69,13 +72,15 @@ class VistaSignUp(Resource):
             access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
             return {
                 'message': f'El correo {request.json["email"]} ha sido registrado',
-                'access_token': access_token 
+                'access_token': access_token,
+                'usuario': usuario_schema.dump(nuevo_usuario)
             }
 
         except Exception as e:
             print(e)
             return {'message':'Ha ocurrido un error'}, 500            
-
+   
+    @cross_origin()
     def put(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
         usuario.contrasena = request.json.get("contrasena", usuario.contrasena)

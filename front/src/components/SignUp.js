@@ -1,10 +1,8 @@
-import * as React from 'react';
+import  React,{useState,useContext} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -14,6 +12,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as Link_Navigation} from 'react-router-dom'
 import { green } from '@mui/material/colors';
+import { AuthContext } from '../context/auth-context';
 
 function Copyright(props) {
   return (
@@ -36,15 +35,44 @@ const theme = createTheme({
   },
 });
 
-export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+const SignUp =()=> {
+  const { login } = useContext(AuthContext);
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    contrasena: "",
+  });
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formObject = new FormData(event.currentTarget);
+    console.log({
+      nombre:formObject.get('nombre'),
+      password:formObject.get('password'),
+      password_confirmation:formObject.get('password_confirmation'),
+      email:formObject.get('password_confirmation')
+    });
+    const response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre:formObject.get('nombre'),
+        password:formObject.get('password'),
+        password_confirmation:formObject.get('password_confirmation'),
+        email:formObject.get('email')
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    login(data.access_token);
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,10 +98,11 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="usuario"
+              id="nombre"
               label="Usuario"
-              name="user"
-              autoComplete="user"
+              name="nombre"
+              autoComplete="nombre"
+              onChange={handleInputChange}
               autoFocus
             />
             <TextField
@@ -84,6 +113,7 @@ export default function SignUp() {
               label="Correo Electrónico"
               name="email"
               autoComplete="email"
+              onChange={handleInputChange}
               autoFocus
             />
             <TextField
@@ -95,6 +125,18 @@ export default function SignUp() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handleInputChange}
+            />
+              <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password_confirmation"
+              label="Confirmacion de contraseña"
+              type="password_confirmation"
+              id="password_confirmation"
+              autoComplete="password_confirmation"
+              onChange={handleInputChange}
             />
             <Button
               type="submit"
@@ -118,3 +160,4 @@ export default function SignUp() {
     </ThemeProvider>
   );
 }
+export default SignUp
