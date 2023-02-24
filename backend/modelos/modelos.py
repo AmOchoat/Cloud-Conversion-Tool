@@ -30,6 +30,7 @@ class Usuario(db.Model):
 class Tarea(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String(50))
+    nombre_archivo= db.Column(db.String(50))
     extension_original = db.Column(db.String(20))
     extension_convertir = db.Column(db.String(20))
     estado = db.Column(db.String(50), nullable = False)
@@ -42,4 +43,4 @@ class UsuarioSchema(ma.Schema):
 
 class TareaSchema(ma.Schema):
     class Meta:
-         fields = ("id" ,"nombre", "extension_original", "extension_convertir", "estado", "fecha")
+         fields = ("id" ,"nombre", "nombre_archivo", "extension_original", "extension_convertir", "estado", "fecha")
