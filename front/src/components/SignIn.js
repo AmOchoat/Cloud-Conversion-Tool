@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React,{useState,useContext} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as Link_Navigation} from 'react-router-dom'
 import { green } from '@mui/material/colors';
+import { AuthContext } from '../context/auth-context';
 
 function Copyright(props) {
   return (
@@ -37,13 +38,36 @@ const theme = createTheme({
 });
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const { login } = useContext(AuthContext);
+  const [formData, setFormData] = useState({
+    email: "",
+    contrasena: "",
+  });
+
+  const handleInputChange = (event) => {
+
+    const { name, value } = event.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSubmit = async(event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const formObject = new FormData(event.currentTarget);
     console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+      email: formObject.get('email'),
+      password: formObject.get('password'),
     });
+    const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        password:formObject.get('password'),
+        email:formObject.get('email')
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    login(data.access_token);
   };
 
   return (
@@ -75,6 +99,7 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={handleInputChange}
             />
             <TextField
               margin="normal"
@@ -85,6 +110,7 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handleInputChange}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

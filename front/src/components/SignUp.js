@@ -1,10 +1,8 @@
-import  React,{useState} from 'react';
+import  React,{useState,useContext} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -14,6 +12,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as Link_Navigation} from 'react-router-dom'
 import { green } from '@mui/material/colors';
+import { AuthContext } from '../context/auth-context';
 
 function Copyright(props) {
   return (
@@ -37,7 +36,7 @@ const theme = createTheme({
 });
 
 const SignUp =()=> {
-
+  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
@@ -54,17 +53,24 @@ const SignUp =()=> {
     event.preventDefault();
     const formObject = new FormData(event.currentTarget);
     console.log({
-      email: formObject.get('email'),
-      password: formObject.get('password'),
-      passwordC: formObject.get('password-confirmation'),
+      nombre:formObject.get('nombre'),
+      password:formObject.get('password'),
+      password_confirmation:formObject.get('password_confirmation'),
+      email:formObject.get('password_confirmation')
     });
     const response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        nombre:formObject.get('nombre'),
+        password:formObject.get('password'),
+        password_confirmation:formObject.get('password_confirmation'),
+        email:formObject.get('email')
+      }),
     });
     const data = await response.json();
     console.log(data);
+    login(data.access_token);
   }
 
 
@@ -125,11 +131,11 @@ const SignUp =()=> {
               margin="normal"
               required
               fullWidth
-              name="password-confirmation"
+              name="password_confirmation"
               label="Confirmacion de contraseña"
-              type="password-confirmation"
-              id="password-confirmation"
-              autoComplete="current-password"
+              type="password_confirmation"
+              id="password_confirmation"
+              autoComplete="password_confirmation"
               onChange={handleInputChange}
             />
             <Button
