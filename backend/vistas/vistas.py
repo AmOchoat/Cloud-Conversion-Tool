@@ -3,8 +3,7 @@ from datetime import timedelta, datetime
 from flask import request
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
-from flask_jwt_extended import jwt_required, create_access_token
-
+from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 
 usuario_schema = UsuarioSchema()
@@ -98,7 +97,7 @@ class VistaTasks(Resource):
     '''
     '''
     @jwt_required()
-    def post(self,nombre_usuario):
+    def post(self):
         file = request.files['file']
         _, extension = os.path.splitext(file.filename)
         file.save('uploads/' + file.filename)
@@ -108,9 +107,13 @@ class VistaTasks(Resource):
             estado="uploaded",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
-            user=nombre_usuario
+            usuarios=get_jwt_identity()
         )
-        usuario = Usuario.query.get_or_404(nombre_usuario)
+        db.session.add(nueva_tarea)
+        db.session.commit()
+        usuario = Usuario.query.get_or_404(get_jwt_identity())
+        print("AQUIIIIIIIIIIIIIIIIIIII")
+        print(usuario)
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
     
