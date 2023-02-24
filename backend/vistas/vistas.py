@@ -7,6 +7,7 @@ from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 from flask_cors import CORS, cross_origin
+from ..tareas import comprimir_zip
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
@@ -99,23 +100,30 @@ Obtener todas las tareas de un usuario y crear una tarea
 class VistaTasks(Resource):
 
     '''
+    Creación de una tarea de compresión
     '''
     @jwt_required()
     def post(self):
         file = request.files['file']
+        
         nombre_arch, extension = os.path.splitext(file.filename)
+        
         file.save('uploads/' + file.filename)
+        
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
             extension_original=extension,
             estado="uploaded",
-            nombre_archivo=nombre_arch,
+            nombre_archivo_ori=nombre_arch,
+            nombre_archivo_final=nombre_arch+"compressed",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
             usuarios=get_jwt_identity()
         )
+
         db.session.add(nueva_tarea)
         db.session.commit()
+        comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result')
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
@@ -128,7 +136,6 @@ class VistaTasks(Resource):
         max_tasks = request.args.get('max_tasks')
         order = request.args.get('order')
         print("Hola bom shía" + get_jwt_identity())
-
         if int(order):
             return [tarea_schema.dump(tarea) for tarea in Tarea.query.filter(Tarea.usuarios==get_jwt_identity()).order_by(desc(Tarea.id)).limit(max_tasks).all()]
         else:
@@ -146,7 +153,7 @@ class VistaTask(Resource):
         db.session.commit()
         return '',204
     
-# class VistaFile(Resource):
-#     @jwt_required()
-#     def get(self,id_task):
-#         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+class VistaFile(Resource):
+    @jwt_required()
+    def get(self,id_task):
+        return tarea_schema.dump(Tarea.query.get_or_404(id_task))
