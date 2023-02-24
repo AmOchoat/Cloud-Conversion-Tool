@@ -31,7 +31,8 @@ class VistaSignIn(Resource):
             access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
             return {
                 'message':'Sesion iniciada',
-                'access_token':access_token
+                'access_token':access_token,
+                 'usuario': usuario_schema.dump(usuario)
             }
         
         except:
@@ -70,7 +71,8 @@ class VistaSignUp(Resource):
             access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
             return {
                 'message': f'El correo {request.json["email"]} ha sido registrado',
-                'access_token': access_token 
+                'access_token': access_token,
+                'usuario': usuario_schema.dump(nuevo_usuario)
             }
 
         except Exception as e:
