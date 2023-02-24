@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
-
+from sqlalchemy import desc, asc
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 
 usuario_schema = UsuarioSchema()
@@ -122,10 +122,12 @@ class VistaTasks(Resource):
         order = request.args.get('order')
         print("Hola bom shía" + get_jwt_identity())
         usuario = Usuario.query.get_or_404(get_jwt_identity())
+
+        # return [tarea_schema.dump(tarea) for tarea in usuario.tareas[:max_tasks]]
         if int(order):
-            return [tarea_schema.dump(tarea) for tarea in usuario.tareas]
+            return [tarea_schema.dump(tarea) for tarea in Tarea.query.filter(Tarea.usuarios==get_jwt_identity()).order_by(desc(Tarea.id)).limit(max_tasks).all()]
         else:
-            return [tarea_schema.dump(tarea) for tarea in usuario.tareas]
+            return [tarea_schema.dump(tarea) for tarea in Tarea.query.filter(Tarea.usuarios==get_jwt_identity()).order_by(asc(Tarea.id)).limit(max_tasks).all()]
 
 class VistaTask(Resource):
     @jwt_required()
