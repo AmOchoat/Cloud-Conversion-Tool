@@ -112,8 +112,6 @@ class VistaTasks(Resource):
         db.session.add(nueva_tarea)
         db.session.commit()
         usuario = Usuario.query.get_or_404(get_jwt_identity())
-        print("AQUIIIIIIIIIIIIIIIIIIII")
-        print(usuario)
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
     
