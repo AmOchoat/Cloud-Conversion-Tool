@@ -150,7 +150,7 @@ class VistaTask(Resource):
         db.session.commit()
         return '',204
     
-# class VistaFile(Resource):
-#     @jwt_required()
-#     def get(self,id_task):
-#         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+class VistaFile(Resource):
+    @jwt_required()
+    def get(self,id_task):
+        return tarea_schema.dump(Tarea.query.get_or_404(id_task))
