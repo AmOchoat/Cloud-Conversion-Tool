@@ -13,10 +13,25 @@ db.init_app(app)
 db.create_all()
 api = Api(app)
 
-api.add_resource(VistaSignIn, '/api/auth/login')
+# Permite crear una cuenta de usuario, con los campos usuario, correo electrónico y 
+# contraseña. El usuario y el correo electrónico deben ser únicos en la plataforma, la 
+# contraseña debe seguir unos lineamientos mínimos de seguridad, además debe ser 
+# solicitada dos veces para que el usuario confirme que ingresa la contraseña 
+# correctamente. 
+
 api.add_resource(VistaSignUp, '/api/auth/signup')
-api.add_resource(VistaGETTasks, '/api/tasks')
-api.add_resource(VistaPOSTTasks, '/api/tasks/<string:nombre_usuario>')
+
+# Permite recuperar el token de autorización para consumir los recursos del API 
+# suministrando un nombre de usuario y una contraseña correcta de una cuenta 
+# registrada.
+api.add_resource(VistaSignIn, '/api/auth/login')
+
+# GET - Permite recuperar todas las tareas de conversión de un usuario autorizado en la 
+# aplicación.
+# 
+# POST - Permite crear una nueva tarea de conversión de formatos. El usuario requiere 
+# autorización.
+api.add_resource(VistaTasks, '/api/tasks')
 api.add_resource(VistaTask, '/api/tasks/<int:id_task>')
 
 app.config['JWT_SECRET_KEY'] = "SuperSecret"

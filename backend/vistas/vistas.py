@@ -89,7 +89,14 @@ class VistaSignUp(Resource):
         db.session.commit()
         return '', 204
 
-class VistaPOSTTasks(Resource):
+
+'''
+Obtener todas las tareas de un usuario y crear una tarea
+'''
+class VistaTasks(Resource):
+
+    '''
+    '''
     @jwt_required()
     def post(self,nombre_usuario):
         file = request.files['file']
@@ -107,7 +114,9 @@ class VistaPOSTTasks(Resource):
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
     
-class VistaGETTasks(Resource):
+    '''
+    Recuperar todas las tareas de conversión de un usuario autorizado.
+    '''
     @jwt_required()
     def get(self):
         return [tarea_schema.dump(tarea) for tarea in Tarea.query.all()]
