@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
+from ..tareas import comprimir_zip
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
@@ -96,12 +97,16 @@ Obtener todas las tareas de un usuario y crear una tarea
 class VistaTasks(Resource):
 
     '''
+    Creación de una tarea de compresión
     '''
     @jwt_required()
     def post(self):
         file = request.files['file']
+        
         nombre_arch, extension = os.path.splitext(file.filename)
+        
         file.save('uploads/' + file.filename)
+        
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
             extension_original=extension,
@@ -111,8 +116,12 @@ class VistaTasks(Resource):
             fecha=datetime.now(),
             usuarios=get_jwt_identity()
         )
+
         db.session.add(nueva_tarea)
         db.session.commit()
+        print("Antes")
+        comprimir_zip.delay(nombre_arch, nombre_arch+"oli", '/')
+        print("Despues")
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
