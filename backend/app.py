@@ -10,7 +10,8 @@ app_context.push()
 
 db.init_app(app)
 
-db.create_all()
+db.create_all() 
+db.session.commit()
 api = Api(app)
 
 # Permite crear una cuenta de usuario, con los campos usuario, correo electrónico y 
