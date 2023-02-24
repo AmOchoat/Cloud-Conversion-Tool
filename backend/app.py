@@ -1,7 +1,7 @@
-from backend import create_app
+from __init__ import create_app
 from flask_restful import Api
-from .modelos import db
-from .vistas import *
+from modelos import *
+from vistas import *
 from flask_jwt_extended import JWTManager
 
 app = create_app('default')

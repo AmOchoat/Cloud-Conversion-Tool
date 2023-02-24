@@ -1,12 +1,12 @@
+
 import os
 from datetime import timedelta, datetime
 from flask import request
 from flask_restful import Resource
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
-from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
-from ..tareas import comprimir_zip
+from modelos import *
+from tareas import comprimir_zip
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
