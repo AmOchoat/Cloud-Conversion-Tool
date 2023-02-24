@@ -42,4 +42,4 @@ class UsuarioSchema(ma.Schema):
 
 class TareaSchema(ma.Schema):
     class Meta:
-         fields = ("nombre", "extension_original", "extension_convertir", "estado", "fecha")
+         fields = ("id" ,"nombre", "extension_original", "extension_convertir", "estado", "fecha")

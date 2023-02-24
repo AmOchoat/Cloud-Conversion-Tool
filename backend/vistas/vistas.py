@@ -3,6 +3,7 @@ from datetime import timedelta, datetime
 from flask import request
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import desc, asc
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from ..modelos import Usuario, Tarea, UsuarioSchema, TareaSchema, db
 
@@ -120,12 +121,20 @@ class VistaTasks(Resource):
     '''
     @jwt_required()
     def get(self):
-        return [tarea_schema.dump(tarea) for tarea in Tarea.query.all()]
+        max_tasks = request.args.get('max_tasks')
+        order = request.args.get('order')
+        print("Hola bom shía" + get_jwt_identity())
+
+        if int(order):
+            return [tarea_schema.dump(tarea) for tarea in Tarea.query.filter(Tarea.usuarios==get_jwt_identity()).order_by(desc(Tarea.id)).limit(max_tasks).all()]
+        else:
+            return [tarea_schema.dump(tarea) for tarea in Tarea.query.filter(Tarea.usuarios==get_jwt_identity()).order_by(asc(Tarea.id)).limit(max_tasks).all()]
 
 class VistaTask(Resource):
     @jwt_required()
     def get(self,id_task):
         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+    
     @jwt_required()    
     def delete(self,id_task):
         task = Tarea.query.get_or_404(id_task)
