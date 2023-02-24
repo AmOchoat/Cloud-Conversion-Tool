@@ -106,7 +106,8 @@ class VistaTasks(Resource):
             nombre=request.form.get('nombre'),
             extension_original=extension,
             estado="uploaded",
-            nombre_archivo=nombre_arch,
+            nombre_archivo_ori=nombre_arch,
+            nombre_archivo_final=nombre_arch,
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
             usuarios=get_jwt_identity()
