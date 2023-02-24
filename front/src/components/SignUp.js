@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React,{useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -36,15 +36,37 @@ const theme = createTheme({
   },
 });
 
-export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+const SignUp =()=> {
+
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+    contrasena: "",
+  });
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formObject = new FormData(event.currentTarget);
+    console.log({
+      email: formObject.get('email'),
+      password: formObject.get('password'),
+      passwordC: formObject.get('password-confirmation'),
+    });
+    const response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
+    console.log(data);
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,10 +92,11 @@ export default function SignUp() {
               margin="normal"
               required
               fullWidth
-              id="usuario"
+              id="nombre"
               label="Usuario"
-              name="user"
-              autoComplete="user"
+              name="nombre"
+              autoComplete="nombre"
+              onChange={handleInputChange}
               autoFocus
             />
             <TextField
@@ -84,6 +107,7 @@ export default function SignUp() {
               label="Correo Electrónico"
               name="email"
               autoComplete="email"
+              onChange={handleInputChange}
               autoFocus
             />
             <TextField
@@ -95,6 +119,18 @@ export default function SignUp() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handleInputChange}
+            />
+              <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password-confirmation"
+              label="Confirmacion de contraseña"
+              type="password-confirmation"
+              id="password-confirmation"
+              autoComplete="current-password"
+              onChange={handleInputChange}
             />
             <Button
               type="submit"
@@ -118,3 +154,4 @@ export default function SignUp() {
     </ThemeProvider>
   );
 }
+export default SignUp
