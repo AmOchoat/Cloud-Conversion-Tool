@@ -119,9 +119,7 @@ class VistaTasks(Resource):
 
         db.session.add(nueva_tarea)
         db.session.commit()
-        print("Antes")
-        comprimir_zip.delay(nombre_arch, nombre_arch+"oli", '/')
-        print("Despues")
+        comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result')
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}

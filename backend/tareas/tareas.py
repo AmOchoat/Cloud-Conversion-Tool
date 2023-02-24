@@ -1,9 +1,10 @@
 from celery import Celery
-from zipfile import ZipFile
-from .zip import compress
+import zipfile
 
-celery = Celery('tasks', broker='redis://localhost:6379/0')
+celery = Celery('tareas', broker='redis://localhost:6379/0')
 
-@celery.task
+@celery.task(name='comprimir_zip')
 def comprimir_zip(filename, zipname, new_path):
-    compress(filename, zipname, new_path)
+    zfile = zipfile.ZipFile(new_path + '/' + zipname, 'w')
+    zfile.write(filename, compress_type = zipfile.ZIP_DEFLATED)
+    zfile.close()
