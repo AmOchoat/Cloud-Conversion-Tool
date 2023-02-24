@@ -75,7 +75,7 @@ class VistaSignUp(Resource):
             return {'message':'Ha ocurrido un error'}, 500            
 
     def put(self, id_usuario):
-        usuario = User.query.get_or_404(id_usuario)
+        usuario = Usuario.query.get_or_404(id_usuario)
         usuario.contrasena = request.json.get("contrasena", usuario.contrasena)
         db.session.commit()
         return usuario_schema.dump(usuario)
@@ -84,7 +84,7 @@ class VistaSignUp(Resource):
         return [usuario_schema.dump(usuario) for usuario in Usuario.query.all()]
 
     def delete(self, id_usuario):
-        usuario = User.query.get_or_404(id_usuario)
+        usuario = Usuario.query.get_or_404(id_usuario)
         db.session.delete(usuario)
         db.session.commit()
         return '', 204
@@ -102,12 +102,12 @@ class VistaTasks(Resource):
         file = request.files['file']
         nombre_arch, extension = os.path.splitext(file.filename)
         file.save('uploads/' + file.filename)
-        nueva_tarea= Task(
+        nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
             extension_original=extension,
             estado="uploaded",
             nombre_archivo_ori=nombre_arch,
-            nombre_archivo_final=nombre_arch,
+            nombre_archivo_final=nombre_arch+"-compressed",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
             usuarios=get_jwt_identity()
@@ -139,7 +139,7 @@ class VistaTask(Resource):
     
     @jwt_required()    
     def delete(self,id_task):
-        task = Task.query.get_or_404(id_task)
+        task = Tarea.query.get_or_404(id_task)
         db.session.delete(task)
         db.session.commit()
         return '',204
