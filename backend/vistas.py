@@ -2,10 +2,13 @@
 import os
 from datetime import timedelta, datetime
 from flask import request
+from flask_cors import cross_origin
 from flask_restful import Resource
-from sqlalchemy import desc, asc
+from sqlalchemy import desc, asc , or_ , and_
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from modelos import *
+from flask import send_file
+
 from tareas import comprimir_zip
 
 usuario_schema = UsuarioSchema()
