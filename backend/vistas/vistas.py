@@ -111,6 +111,9 @@ class VistaTasks(Resource):
         nombre_arch, extension = os.path.splitext(file.filename)
         
         file.save('uploads/' + file.filename)
+        usuario = Usuario.query.get_or_404(get_jwt_identity())
+        email= usuario.email
+        print('email',email)
         
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
@@ -120,7 +123,7 @@ class VistaTasks(Resource):
             nombre_archivo_final=nombre_arch+"compressed",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
-            usuarios=get_jwt_identity()
+            usuarios=email
         )
 
         db.session.add(nueva_tarea)
