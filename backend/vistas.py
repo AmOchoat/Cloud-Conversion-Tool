@@ -15,6 +15,7 @@ tarea_schema = TareaSchema()
 Login de un Usuario
 '''
 class VistaSignIn(Resource):
+    @cross_origin()
     def post(self):
         request.get_json(force=True)
         usuario = Usuario.query.get(request.json['email'])
@@ -29,7 +30,8 @@ class VistaSignIn(Resource):
             access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
             return {
                 'message':'Sesion iniciada',
-                'access_token':access_token
+                'access_token':access_token,
+                 'usuario': usuario_schema.dump(usuario)
             }
         
         except:
@@ -39,7 +41,7 @@ class VistaSignIn(Resource):
 Registro de un usuario
 '''
 class VistaSignUp(Resource):
-
+    @cross_origin()
     def post(self):
 
         if Usuario.query.filter_by(email=request.json['email']).first() is not None:
@@ -68,13 +70,15 @@ class VistaSignUp(Resource):
             access_token = create_access_token(identity = request.json['email'], expires_delta = timedelta(days = 1))
             return {
                 'message': f'El correo {request.json["email"]} ha sido registrado',
-                'access_token': access_token 
+                'access_token': access_token,
+                'usuario': usuario_schema.dump(nuevo_usuario)
             }
 
         except Exception as e:
             print(e)
             return {'message':'Ha ocurrido un error'}, 500            
-
+   
+    @cross_origin()
     def put(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
         usuario.contrasena = request.json.get("contrasena", usuario.contrasena)
@@ -106,15 +110,19 @@ class VistaTasks(Resource):
         nombre_arch, extension = os.path.splitext(file.filename)
         
         file.save('uploads/' + file.filename)
+        usuario = Usuario.query.get_or_404(get_jwt_identity())
+        email= usuario.email
+        print('email',email)
         
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
             extension_original=extension,
             estado="uploaded",
-            nombre_archivo=nombre_arch,
+            nombre_archivo_ori=nombre_arch,
+            nombre_archivo_final=nombre_arch+"compressed",
             extension_convertir=request.form.get('extension_convertir'),
             fecha=datetime.now(),
-            usuarios=get_jwt_identity()
+            usuarios=email
         )
 
         db.session.add(nueva_tarea)
@@ -149,7 +157,19 @@ class VistaTask(Resource):
         db.session.commit()
         return '',204
     
-# class VistaFile(Resource):
-#     @jwt_required()
-#     def get(self,id_task):
-#         return tarea_schema.dump(Tarea.query.get_or_404(id_task))
+class VistaFile(Resource):
+    @jwt_required()
+    def get(self,nombre_archivo):
+        if "compressed" in nombre_archivo:
+            task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_final==nombre_archivo) )).limit(1).all()]
+            if len(task_con_archivo) > 0:
+                return send_file('result/'+nombre_archivo+task_con_archivo[0].extension_convertir)
+            else:
+                return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
+        else:
+            task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_ori==nombre_archivo) )).limit(1).all()]
+            if len(task_con_archivo) > 0:
+                return send_file('uploads/'+nombre_archivo+task_con_archivo[0].extension_original)
+            else:
+                return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
+

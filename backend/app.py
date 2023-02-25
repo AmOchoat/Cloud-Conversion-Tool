@@ -3,8 +3,15 @@ from flask_restful import Api
 from modelos import *
 from vistas import *
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS, cross_origin
 
 app = create_app('default')
+CORS(app)
+cors = CORS(app, resource={
+        r"/*":{
+            "origins":"*"
+        }
+    })
 app_context = app.app_context()
 app_context.push()
 
@@ -33,7 +40,8 @@ api.add_resource(VistaSignIn, '/api/auth/login')
 # POST - Permite crear una nueva tarea de conversión de formatos. El usuario requiere 
 # autorización.
 api.add_resource(VistaTasks, '/api/tasks')
-api.add_resource(VistaTask, '/api/tasks/<int:id_task>')
+
+api.add_resource(VistaTask, '/api/files/<nombre_archivo>')
 
 app.config['JWT_SECRET_KEY'] = "SuperSecret"
 app.config["JWT_ALGORITHM"] = "HS256"
