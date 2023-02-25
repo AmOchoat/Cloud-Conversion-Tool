@@ -42,6 +42,8 @@ api.add_resource(VistaSignIn, '/api/auth/login')
 api.add_resource(VistaTasks, '/api/tasks')
 api.add_resource(VistaTask, '/api/tasks/<int:id_task>')
 
+api.add_resource(VistaTask, '/api/files/<nombre_archivo>')
+
 app.config['JWT_SECRET_KEY'] = "SuperSecret"
 app.config["JWT_ALGORITHM"] = "HS256"
 jwt = JWTManager(app)
