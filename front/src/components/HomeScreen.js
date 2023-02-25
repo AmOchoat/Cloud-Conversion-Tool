@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React,{useContext} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import CloudIcon from '@mui/icons-material/Cloud';
@@ -16,6 +16,8 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { green } from '@mui/material/colors';
+import { AuthContext } from '../context/auth-context';
+import UploadForm from './UploadForm'
 
 function Copyright(props) {
     return (
@@ -41,16 +43,23 @@ const theme = createTheme({
   });
 
 export default function HomeScreen() {
+  const { logout } = useContext(AuthContext);
+  const handleLogout = ()=>{}
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar position="relative">
-        <Toolbar>
+        <Box style={{
+          display:'flex', 
+        justifyContent:'space-between',
+        flexDirection:'row',
+        }}>
           <CloudIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" color="inherit" noWrap>
+          <Typography variant="h6" color="white" noWrap>
             Cloud Conversion Tool
           </Typography>
-        </Toolbar>
+          <Typography color="white" onClick={logout}>Sign out</Typography>
+        </Box>
       </AppBar>
       <main>
         {/* Hero unit */}
@@ -82,7 +91,8 @@ export default function HomeScreen() {
               spacing={2}
               justifyContent="center"
             >
-              <Button variant="contained">Subir un archivo</Button>
+              <UploadForm/>
+              {/* <Button variant="contained">Subir un archivo</Button> */}
             </Stack>
           </Container>
         </Box>

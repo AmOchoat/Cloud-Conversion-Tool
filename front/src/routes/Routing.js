@@ -10,28 +10,29 @@ import SignUp from "../components/SignUp";
 const Routing = (props) => {
     const { isLoggedIn} = useContext(AuthContext);
     let routes;
-    if(!isLoggedIn){
-        routes=(
-            <Routes>
-                <Route exact path="/" element={<SignIn/>} />
-                <Route exact path="/sign-up" element={<SignUp/>}/>
-                <Route exact path="/home" element={<HomeScreen/>}/>
-            </Routes>
-        )
-    }else{
-        routes=(
-            <Routes>
-                <Route exact path="/" element={<HomeScreen/>} />
-                <Route exact path="/sign-up" element={<SignUp/>}/>
-                <Route exact path="/home" element={<HomeScreen/>}/>
-            </Routes>
-        )
-    }
+    if (isLoggedIn) {
+        routes = (
+          <Routes>
+            <Route path="/" exact element={<HomeScreen />}/>
+            <Route path="/sign-up" exact element={<SignUp />}/>
+          </Routes>
+        );
+      } else {
+        routes = (
+          <Routes>
+            <Route path="/" exact element={<SignIn />}/>
+            <Route path="/sign-up" exact elemet= {<SignUp />}/>
+          </Routes>
+        );
+      }
     
+   
     return(
         <BrowserRouter>
                 {/* TODO: Realizar las rutas propias de la aplicación */ }
-                {routes}
+
+          {routes}
+
         </BrowserRouter>
 
     );

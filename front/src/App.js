@@ -8,9 +8,15 @@ function App() {
   const [accessToken, setAccessToken] = useState('');
 
   const login = useCallback(( accessToken) => {
-    setIsLoggedIn(true);
-    setAccessToken(accessToken);
-    localStorage.setItem('userData', JSON.stringify({ accessToken }));
+ 
+    if(accessToken){
+      console.log('entra')
+      setIsLoggedIn(true);
+      setAccessToken(accessToken);
+      console.log(accessToken)
+      localStorage.setItem('userData', JSON.stringify({ accessToken }));
+    }
+   
   }, []);
   const logout = useCallback(() => {
     setIsLoggedIn(false);
