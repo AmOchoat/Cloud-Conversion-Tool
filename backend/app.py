@@ -40,7 +40,6 @@ api.add_resource(VistaSignIn, '/api/auth/login')
 # POST - Permite crear una nueva tarea de conversión de formatos. El usuario requiere 
 # autorización.
 api.add_resource(VistaTasks, '/api/tasks')
-api.add_resource(VistaTask, '/api/tasks/<int:id_task>')
 
 api.add_resource(VistaTask, '/api/files/<nombre_archivo>')
 
