@@ -28,7 +28,7 @@ function UploadForm() {
     }
     console.log('token',accessToken)
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/tasks", {
+      const response = await fetch("http://54.145.79.81:8000/api/tasks", {
         method: "POST",
         body: formData,
         headers: {

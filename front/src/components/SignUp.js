@@ -58,7 +58,7 @@ const SignUp =()=> {
       password_confirmation:formObject.get('password_confirmation'),
       email:formObject.get('password_confirmation')
     });
-    const response = await fetch("http://127.0.0.1:5000/api/auth/signup", {
+    const response = await fetch("http://54.145.79.81:8000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -68,8 +68,12 @@ const SignUp =()=> {
         email:formObject.get('email')
       }),
     });
+
+    // si al peticion es good_response: 200
+    let response_number = response.status
+    console.log("response_number: ",response_number)
+
     const data = await response.json();
-    console.log(data);
     login(data.access_token);
   }
 
@@ -133,7 +137,7 @@ const SignUp =()=> {
               fullWidth
               name="password_confirmation"
               label="Confirmacion de contraseña"
-              type="password_confirmation"
+              type="password"
               id="password_confirmation"
               autoComplete="password_confirmation"
               onChange={handleInputChange}
