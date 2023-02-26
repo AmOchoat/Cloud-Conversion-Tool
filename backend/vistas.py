@@ -164,15 +164,15 @@ class VistaFile(Resource):
     @jwt_required()
     def get(self,nombre_archivo):
         if "compressed" in nombre_archivo:
-            task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_final==nombre_archivo) )).limit(1).all()]
+            task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_final==nombre_archivo))).limit(1).all()]
             if len(task_con_archivo) > 0:
-                return send_file('result/'+nombre_archivo+task_con_archivo[0].extension_convertir)
+                return send_file('result/'+nombre_archivo+task_con_archivo[0][0].extension_convertir)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
         else:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_ori==nombre_archivo) )).limit(1).all()]
             if len(task_con_archivo) > 0:
-                return send_file('uploads/'+nombre_archivo+task_con_archivo[0].extension_original)
+                return send_file('uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
 
