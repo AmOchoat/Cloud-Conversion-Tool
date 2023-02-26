@@ -18,6 +18,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { green } from '@mui/material/colors';
 import { AuthContext } from '../context/auth-context';
 import UploadForm from './UploadForm'
+import { useState, useEffect } from 'react';
+import { FormControl, InputLabel, Input, FormHelperText, TextField } from '@mui/material';
+
+
 
 function Copyright(props) {
     return (
@@ -32,6 +36,21 @@ function Copyright(props) {
     );
   }
 
+
+  function download(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    // the filename you want
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+
+
 const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const theme = createTheme({
@@ -44,7 +63,69 @@ const theme = createTheme({
 
 export default function HomeScreen() {
   const { logout } = useContext(AuthContext);
+  const { accessToken } = useContext(AuthContext);
+
+  const [max_tasks, setMaxTasks] = useState(5);
+  const [order, setOrder] = useState(0);
+  
+
+  const [tasks, setTasks] = useState([])
+
+  // use effect para fetch de las tasks
+  useEffect(() => {
+
+    const formData = new FormData();
+    formData.append("max_tasks", "5");
+    formData.append("order", "0");
+
+    fetch(`http://54.145.79.81:8000/api/tasks?max_tasks=${max_tasks}&order=${order}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      }
+    }).then((response) => {
+
+      return response.json();
+    }).then((data) => {
+      console.log('Tasks:', data);
+
+      setTasks(data)
+
+
+  }).catch((error) => {
+    console.error('Error:', error);
+
+  });
+
+  }, [max_tasks, order]);
+
+
+  async function handleDescargar(id, name) {
+
+    console.log("XD")
+    
+    fetch(`http://54.145.79.81:8000/api/files/${id}`, {
+
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      }
+    }).then((response) => {
+
+      console.log(response)
+      response.blob().then(blob => download(blob, name))
+
+    }).catch((error) => {
+
+      console.error('Error:', error);
+
+    });
+
+  }
+
   const handleLogout = ()=>{}
+
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -96,11 +177,47 @@ export default function HomeScreen() {
             </Stack>
           </Container>
         </Box>
+
+
+
         <Container sx={{ py: 8 }} maxWidth="md">
           {/* End hero unit */}
+
+          {/* Formulario con  */}
+          <Box
+              component="form"
+              sx={{
+                '& .MuiTextField-root': { m: 1, width: '25ch' },
+              }}
+              noValidate
+              autoComplete="off"
+          >
+            <div>
+              <TextField
+                id="outlined-error"
+                label="Max Tasks"
+                defaultValue={5}
+                onChange={(e) => setMaxTasks(e.target.value?e.target.value:5)}
+                
+              />
+              <TextField
+                id="outlined-error-helper-text"
+                label="Orden"
+                defaultValue={0}
+                onChange={(e) => setOrder(e.target.value?e.target.value:0)}
+              />
+            </div>
+    </Box>
+
+
+          {/* Magin bot*/}
+          <Box sx={{ pt: 4 }}></Box>
+
+
+          
           <Grid container spacing={4}>
-            {cards.map((card) => (
-              <Grid item key={card} xs={12} sm={6} md={4}>
+            {tasks?.map((task) => (
+              <Grid item key={task} xs={12} sm={4} md={6}>
                 <Card
                   sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                 >
@@ -114,16 +231,25 @@ export default function HomeScreen() {
                     alt="random"
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Nombre Archivo
+                    <Typography gutterBottom>
+                      <strong>Nombre task: </strong>
+                      {task.nombre}
                     </Typography>
                     <Typography>
-                      Extensión archivo original
+                      <strong>archivo origen: </strong>
+                      {task.nombre_archivo_ori}{task.extension_original}
+                    </Typography>
+                    <Typography>
+                      <strong>archivo destino: </strong>
+                      {task.nombre_archivo_final}{task.extension_convertir}
+                    </Typography>
+                    <Typography>
+                      <strong>Fecha creacion: </strong>
+                      {task.fecha}
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small">Descargar</Button>
-                    <Button size="small">Convertir</Button>
+                    <Button size="small" onClick={() => handleDescargar(task.nombre_archivo_ori, task.nombre_archivo_ori)}>Descargar</Button>
                   </CardActions>
                 </Card>
               </Grid>
