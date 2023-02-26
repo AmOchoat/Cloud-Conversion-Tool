@@ -116,6 +116,7 @@ class VistaTasks(Resource):
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         email= usuario.email
         print('email',email)
+        fecha_act= datetime.now()
         
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
@@ -124,13 +125,15 @@ class VistaTasks(Resource):
             nombre_archivo_ori=nombre_arch,
             nombre_archivo_final=nombre_arch+"compressed",
             extension_convertir=request.form.get('extension_convertir'),
-            fecha=datetime.now(),
+            fecha=fecha_act,
             usuarios=email
         )
 
         db.session.add(nueva_tarea)
         db.session.commit()
-        comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result')
+        # tarea_en_cuest=Tarea.query.filter(Tarea.fecha==fecha_act).first()
+        # print(tarea_en_cuest.fecha)
+        comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
