@@ -9,7 +9,7 @@ from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identit
 from modelos import *
 from flask import send_file
 
-from tareas import comprimir_zip
+from tareas import *
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
@@ -130,10 +130,17 @@ class VistaTasks(Resource):
         )
 
         db.session.add(nueva_tarea)
-        db.session.commit()
         # tarea_en_cuest=Tarea.query.filter(Tarea.fecha==fecha_act).first()
         # print(tarea_en_cuest.fecha)
-        comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+        if extension == ".zip":
+            comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+        elif extension == ".gz":
+            comprimir_gzip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+        elif extension == ".bz2":
+            comprimir_bz2.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+        else:
+            return "Esta extensión no esta soportada en la aplicación"
+        db.session.commit()
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         usuario.tareas.append(nueva_tarea)
         return {"tarea":tarea_schema.dump(nueva_tarea)}
