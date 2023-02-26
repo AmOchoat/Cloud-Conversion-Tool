@@ -117,6 +117,7 @@ class VistaTasks(Resource):
         email= usuario.email
         print('email',email)
         fecha_act= datetime.now()
+        extension_convertir = request.form.get('extension_convertir')
         
         nueva_tarea= Tarea(
             nombre=request.form.get('nombre'),
@@ -132,11 +133,11 @@ class VistaTasks(Resource):
         db.session.add(nueva_tarea)
         # tarea_en_cuest=Tarea.query.filter(Tarea.fecha==fecha_act).first()
         # print(tarea_en_cuest.fecha)
-        if extension == ".zip":
+        if extension_convertir == ".zip":
             comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
-        elif extension == ".gz":
+        elif extension_convertir == ".gz":
             comprimir_gzip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
-        elif extension == ".bz2":
+        elif extension_convertir == ".bz2":
             comprimir_bz2.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
         else:
             return "Esta extensión no esta soportada en la aplicación"
