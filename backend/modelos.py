@@ -1,13 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from flask_marshmallow import Marshmallow
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from backend import db, ma
 
 import enum
-
-db = SQLAlchemy()
-ma = Marshmallow()
 
 class Usuario(db.Model):
     nombre = db.Column(db.String(50), unique = True)

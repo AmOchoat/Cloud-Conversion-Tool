@@ -1,7 +1,4 @@
-from __init__ import create_app
 from flask_restful import Api
-from modelos import *
-from vistas import *
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS, cross_origin
 
