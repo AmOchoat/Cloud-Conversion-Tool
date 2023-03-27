@@ -1,6 +1,10 @@
+from backend import *
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS, cross_origin
+from backend import db
+from .vistas import *
+from .modelos import *
 
 app = create_app('default')
 CORS(app)

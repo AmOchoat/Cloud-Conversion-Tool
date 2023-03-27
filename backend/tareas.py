@@ -2,7 +2,7 @@ from celery import Celery
 import zipfile
 import bz2
 import gzip
-from modelos import *
+from .modelos import *
 import time
 
 celery = Celery('tareas', broker='redis://localhost:6379/0')
