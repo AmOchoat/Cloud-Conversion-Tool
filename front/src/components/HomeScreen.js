@@ -78,7 +78,7 @@ export default function HomeScreen() {
     formData.append("max_tasks", "5");
     formData.append("order", "0");
 
-    fetch(`http://54.145.79.81:8000/api/tasks?max_tasks=${max_tasks}&order=${order}`, {
+    fetch(`http://10.0.1.11:8000/api/tasks?max_tasks=${max_tasks}&order=${order}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -104,7 +104,7 @@ export default function HomeScreen() {
 
     console.log("XD")
     
-    fetch(`http://54.145.79.81:8000/api/files/${id}`, {
+    fetch(`http://10.0.1.11:8000/api/files/${id}`, {
 
       method: 'GET',
       headers: {
