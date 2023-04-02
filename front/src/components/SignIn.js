@@ -57,7 +57,7 @@ export default function SignIn() {
       email: formObject.get('email'),
       password: formObject.get('password'),
     });
-    const response = await fetch("http://54.145.79.81:8000/api/auth/login", {
+    const response = await fetch("http://10.0.1.11:8000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
