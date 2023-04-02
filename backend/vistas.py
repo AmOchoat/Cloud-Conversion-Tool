@@ -11,6 +11,8 @@ from flask import send_file
 
 from tareas import *
 
+directorio = "/nfs/general/"
+
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
 
@@ -78,7 +80,6 @@ class VistaSignUp(Resource):
             }
 
         except Exception as e:
-            print(e)
             return {'message':'Ha ocurrido un error'}, 500            
    
     @cross_origin()
@@ -112,10 +113,9 @@ class VistaTasks(Resource):
         
         nombre_arch, extension = os.path.splitext(file.filename)
         
-        file.save('uploads/' + file.filename)
+        file.save( dir + 'uploads/' + file.filename)
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         email= usuario.email
-        print('email',email)
         fecha_act= datetime.now()
         extension_convertir = request.form.get('extension_convertir')
         
@@ -131,14 +131,13 @@ class VistaTasks(Resource):
         )
 
         db.session.add(nueva_tarea)
-        # tarea_en_cuest=Tarea.query.filter(Tarea.fecha==fecha_act).first()
-        # print(tarea_en_cuest.fecha)
+ 
         if extension_convertir == ".zip":
-            comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+            comprimir_zip.delay( dir + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), dir + 'result', fecha_act)
         elif extension_convertir == ".gz":
-            comprimir_gzip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+            comprimir_gzip.delay( dir + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), dir + 'result', fecha_act)
         elif extension_convertir == ".bz2":
-            comprimir_bz2.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
+            comprimir_bz2.delay( dir + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), dir + 'result', fecha_act)
         else:
             return "Esta extensión no esta soportada en la aplicación"
         db.session.commit()
@@ -153,7 +152,6 @@ class VistaTasks(Resource):
     def get(self):
         max_tasks = request.args.get('max_tasks')
         order = request.args.get('order')
-        print("Hola bom shía" + get_jwt_identity())
         if int(order):
             return [tarea_schema.dump(tarea) for tarea in Tarea.query.filter(Tarea.usuarios==get_jwt_identity()).order_by(desc(Tarea.id)).limit(max_tasks).all()]
         else:
@@ -182,9 +180,7 @@ class VistaFile(Resource):
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
         else:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_ori==nombre_archivo))).limit(1).all()]
-            # print(task_con_archivo)
             if len(task_con_archivo[0]) > 0:
-                return send_file('uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
+                return send_file( dir + 'uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
-
