@@ -13,6 +13,8 @@ from .tareas import *
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
 
+dir = ""
+
 '''
 Login de un Usuario
 '''
@@ -114,7 +116,6 @@ class VistaTasks(Resource):
         file.save('uploads/' + file.filename)
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         email= usuario.email
-        print('email',email)
         fecha_act= datetime.now()
         extension_convertir = request.form.get('extension_convertir')
         
@@ -130,8 +131,6 @@ class VistaTasks(Resource):
         )
 
         db.session.add(nueva_tarea)
-        # tarea_en_cuest=Tarea.query.filter(Tarea.fecha==fecha_act).first()
-        # print(tarea_en_cuest.fecha)
         if extension_convertir == ".zip":
             comprimir_zip.delay("uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), 'result', fecha_act)
         elif extension_convertir == ".gz":
