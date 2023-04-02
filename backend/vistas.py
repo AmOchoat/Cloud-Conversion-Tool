@@ -113,7 +113,7 @@ class VistaTasks(Resource):
         
         nombre_arch, extension = os.path.splitext(file.filename)
         
-        file.save( dir + 'uploads/' + file.filename)
+        file.save( directorio + 'uploads/' + file.filename)
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         email= usuario.email
         fecha_act= datetime.now()
@@ -133,11 +133,11 @@ class VistaTasks(Resource):
         db.session.add(nueva_tarea)
  
         if extension_convertir == ".zip":
-            comprimir_zip.delay( dir + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), dir + 'result', fecha_act)
+            comprimir_zip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
         elif extension_convertir == ".gz":
-            comprimir_gzip.delay( dir + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), dir + 'result', fecha_act)
+            comprimir_gzip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
         elif extension_convertir == ".bz2":
-            comprimir_bz2.delay( dir + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), dir + 'result', fecha_act)
+            comprimir_bz2.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
         else:
             return "Esta extensión no esta soportada en la aplicación"
         db.session.commit()
@@ -181,6 +181,6 @@ class VistaFile(Resource):
         else:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_ori==nombre_archivo))).limit(1).all()]
             if len(task_con_archivo[0]) > 0:
-                return send_file( dir + 'uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
+                return send_file( directorio + 'uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
