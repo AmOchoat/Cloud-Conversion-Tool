@@ -6,7 +6,7 @@ from modelos import *
 import time
 from app import app_context
 
-celery = Celery('tareas', broker='redis://localhost:6379/0')
+celery = Celery('tareas', broker='redis://10.0.1.11:6379/0')
 
 @celery.task(name='comprimir_zip')
 def comprimir_zip(filename, zipname, new_path,fecha_id):
