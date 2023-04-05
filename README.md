@@ -15,12 +15,12 @@ De la misma manera hay dos instancias con IP pública que permiten realizar cone
 
 El repositorio de este proyecto fue clonado en cada una de las intancias mencionadas (Exceptuando Cloud SQL). A continuación se explicará el proceso de clonación y ejecución:
 - Web-Server: 
-        1. Clonar repo
-        2. Instalar virtualenv a través de pip
-        3. Pararse en la carpeta 'backend', crear y ejecutar el entorno virtual
-        4. instalar todos los requerimientos del proyecto a través del comando: 'pip install -r requeriments.txt'
-        5. ejecutar del backend en un servidor WGSI a través del comando 'gunicorn -b 0.0.0.0:8000 app:app'
-        6. En otra consola pararse en la carpeta backed y ejecutar el comando: 'redis-server --protected-mode no' para iniciarlizar el message broker.
+      1. Clonar repo
+      2. Instalar virtualenv a través de pip
+      3. Pararse en la carpeta 'backend', crear y ejecutar el entorno virtual
+      4. instalar todos los requerimientos del proyecto a través del comando: 'pip install -r requeriments.txt'
+      5. ejecutar del backend en un servidor WGSI a través del comando 'gunicorn -b 0.0.0.0:8000 app:app'
+      6. En otra consola pararse en la carpeta backed y ejecutar el comando: 'redis-server --protected-mode no' para iniciarlizar el message broker.
 - Front:
       1. Clonar repo
       2. Instalar node.js
