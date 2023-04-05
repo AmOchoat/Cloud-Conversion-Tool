@@ -16,7 +16,8 @@ def comprimir_zip(filename, zipname, new_path,fecha_id):
     zfile.write(filename, compress_type = zipfile.ZIP_DEFLATED)
     zfile.close()
     with engine.connect() as con:
-        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_id}';"
+        fecha_processed = fecha_id.replace("T", " ")
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
         result = con.execute(text(sentencia))
         print(sentencia)
         print(result.fetchall())
@@ -28,7 +29,8 @@ def comprimir_gzip(filename, zipname, new_path,fecha_id):
     gzipFile.write(old_file.read())
     gzipFile.close()
     with engine.connect() as con:
-        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_id}';"
+        fecha_processed = fecha_id.replace("T", " ")
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
         result = con.execute(text(sentencia))
         print(sentencia)
         print(result.fetchall())
@@ -40,7 +42,8 @@ def comprimir_bz2(filename, zipname, new_path,fecha_id):
     bz2File.write(bz2.compress(old_file.read()))
     bz2File.close()
     with engine.connect() as con:
-        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_id}';"
+        fecha_processed = fecha_id.replace("T", " ")
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
         result = con.execute(text(sentencia))
         print(sentencia)
         print(result.fetchall())
