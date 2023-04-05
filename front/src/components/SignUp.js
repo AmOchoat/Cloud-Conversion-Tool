@@ -1,4 +1,4 @@
-import  React,{useState,useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,13 +10,18 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link as Link_Navigation} from 'react-router-dom'
+import { Link as Link_Navigation } from 'react-router-dom';
 import { green } from '@mui/material/colors';
 import { AuthContext } from '../context/auth-context';
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
       {'Copyright © '}
       <Link color="inherit" href="https://uniandes.edu.co/">
         ISIS 4426 - Desarrollo de Soluciones Cloud
@@ -35,12 +40,12 @@ const theme = createTheme({
   },
 });
 
-const SignUp =()=> {
+const SignUp = () => {
   const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
-    contrasena: "",
+    nombre: '',
+    email: '',
+    contrasena: '',
   });
 
   const handleInputChange = (event) => {
@@ -48,35 +53,33 @@ const SignUp =()=> {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formObject = new FormData(event.currentTarget);
     console.log({
-      nombre:formObject.get('nombre'),
-      password:formObject.get('password'),
-      password_confirmation:formObject.get('password_confirmation'),
-      email:formObject.get('password_confirmation')
+      nombre: formObject.get('nombre'),
+      password: formObject.get('password'),
+      password_confirmation: formObject.get('password_confirmation'),
+      email: formObject.get('password_confirmation'),
     });
-    const response = await fetch("http://10.0.1.11:8000/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('http://35.237.111.106:8000/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nombre:formObject.get('nombre'),
-        password:formObject.get('password'),
-        password_confirmation:formObject.get('password_confirmation'),
-        email:formObject.get('email')
+        nombre: formObject.get('nombre'),
+        password: formObject.get('password'),
+        password_confirmation: formObject.get('password_confirmation'),
+        email: formObject.get('email'),
       }),
     });
 
     // si al peticion es good_response: 200
-    let response_number = response.status
-    console.log("response_number: ",response_number)
+    let response_number = response.status;
+    console.log('response_number: ', response_number);
 
     const data = await response.json();
     login(data.access_token);
-  }
-
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -97,8 +100,13 @@ const SignUp =()=> {
           <Typography component="h1" variant="h5">
             Registrarte
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <TextField
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
+          >
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -131,7 +139,7 @@ const SignUp =()=> {
               autoComplete="current-password"
               onChange={handleInputChange}
             />
-              <TextField
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -152,7 +160,12 @@ const SignUp =()=> {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2" component={Link_Navigation} to="/">
+                <Link
+                  href="#"
+                  variant="body2"
+                  component={Link_Navigation}
+                  to="/"
+                >
                   ¿Ya tienes una cuenta? Inicia Sesión
                 </Link>
               </Grid>
@@ -163,5 +176,5 @@ const SignUp =()=> {
       </Container>
     </ThemeProvider>
   );
-}
-export default SignUp
+};
+export default SignUp;

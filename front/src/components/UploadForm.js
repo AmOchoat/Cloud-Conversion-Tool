@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/auth-context';
 
 function UploadForm() {
@@ -19,31 +19,31 @@ function UploadForm() {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     Object.entries(form).forEach(([key, value]) => {
       formData.append(key, value);
     });
     for (var pair of formData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
+      console.log(pair[0] + ', ' + pair[1]);
     }
-    console.log('token',accessToken)
+    console.log('token', accessToken);
     try {
-      const response = await fetch("http://10.0.1.11:8000/api/tasks", {
-        method: "POST",
+      const response = await fetch('http://35.237.111.106:8000/api/tasks', {
+        method: 'POST',
         body: formData,
         headers: {
-            // 'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${accessToken}`,
-          },
+          // 'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (response.ok) {
-        console.log("File uploaded successfully.");
+        console.log('File uploaded successfully.');
       } else {
-        console.error("Failed to upload file.");
+        console.error('Failed to upload file.');
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error('Error uploading file:', error);
     }
   };
 
@@ -55,11 +55,21 @@ function UploadForm() {
       </div>
       <div>
         <label htmlFor="nombre">nombre: </label>
-        <input type="text" id="nombre" name="nombre" onChange={handleInputChange} />
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          onChange={handleInputChange}
+        />
       </div>
       <div>
         <label htmlFor="extension_convertir">extension convertir: </label>
-        <input type="text" id="extension_convertir" name="extension_convertir" onChange={handleInputChange} />
+        <input
+          type="text"
+          id="extension_convertir"
+          name="extension_convertir"
+          onChange={handleInputChange}
+        />
       </div>
       <button type="submit">Submit</button>
     </form>

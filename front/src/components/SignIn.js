@@ -1,4 +1,4 @@
-import React,{useState,useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,13 +12,18 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link as Link_Navigation} from 'react-router-dom'
+import { Link as Link_Navigation } from 'react-router-dom';
 import { green } from '@mui/material/colors';
 import { AuthContext } from '../context/auth-context';
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
       {'Copyright © '}
       <Link color="inherit" href="https://uniandes.edu.co/">
         ISIS 4426 - Desarrollo de Soluciones Cloud
@@ -40,34 +45,33 @@ const theme = createTheme({
 export default function SignIn() {
   const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    email: "",
-    contrasena: "",
+    email: '',
+    contrasena: '',
   });
 
   const handleInputChange = (event) => {
-
     const { name, value } = event.target;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = async(event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const formObject = new FormData(event.currentTarget);
     console.log({
       email: formObject.get('email'),
       password: formObject.get('password'),
     });
-    const response = await fetch("http://10.0.1.11:8000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('http://35.237.111.106:8000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        password:formObject.get('password'),
-        email:formObject.get('email')
+        password: formObject.get('password'),
+        email: formObject.get('email'),
       }),
     });
     const data = await response.json();
     console.log(data);
-    console.log("data.access_token", data.access_token)
+    console.log('data.access_token', data.access_token);
     login(data.access_token);
   };
 
@@ -90,7 +94,12 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Iniciar Sesión
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required
@@ -132,8 +141,13 @@ export default function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2" component={Link_Navigation} to="/sign-up">
-                  {"No tienes una cuenta? Registrate!"}
+                <Link
+                  href="#"
+                  variant="body2"
+                  component={Link_Navigation}
+                  to="/sign-up"
+                >
+                  {'No tienes una cuenta? Registrate!'}
                 </Link>
               </Grid>
             </Grid>
