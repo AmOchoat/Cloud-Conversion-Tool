@@ -14,6 +14,11 @@ De la misma manera hay dos instancias con IP pública que permiten realizar cone
 - Web-Server: 35.237.111.106
 
 El repositorio de este proyecto fue clonado en cada una de las intancias mencionadas (Exceptuando Cloud SQL). A continuación se explicará el proceso de clonación y ejecución:
+
+- Cloud SQL:
+      1. Crear instancia Postgresql y asociarla a la VPC previamente creada
+      2. Conectarse a la instancia a través psql client en cualquiera de las VMS de Compute Engine
+      3. Ejecutar la sentencia: 'CREATE DATABASE tasks;'
 - Web-Server: 
       1. Clonar repo
       2. Instalar virtualenv a través de pip
@@ -45,10 +50,6 @@ El repositorio de este proyecto fue clonado en cada una de las intancias mencion
         3. sudo mkdir -p /nfs/home
         4. sudo mount host_ip:/var/nfs/general /nfs/general
         5. sudo mount host_ip:/home /nfs/home
-- Cloud SQL:
-      1. Crear instancia Postgresql y asociarla a la VPC previamente creada
-      2. Conectarse a la instancia a través psql client en cualquiera de las VMS de Compute Engine
-      3. Ejecutar la sentencia: 'CREATE DATABASE tasks;'
    
 
 Video Explicación: TODO
