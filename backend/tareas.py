@@ -18,6 +18,7 @@ def comprimir_zip(filename, zipname, new_path,fecha_id):
     with engine.connect() as con:
         sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_id}';"
         result = con.execute(text(sentencia))
+        print(sentencia)
         print(result.fetchall())
         
 @celery.task(name='comprimir_gzip')
@@ -29,6 +30,7 @@ def comprimir_gzip(filename, zipname, new_path,fecha_id):
     with engine.connect() as con:
         sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_id}';"
         result = con.execute(text(sentencia))
+        print(sentencia)
         print(result.fetchall())
 
 @celery.task(name='comprimir_bz2')
@@ -40,4 +42,5 @@ def comprimir_bz2(filename, zipname, new_path,fecha_id):
     with engine.connect() as con:
         sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_id}';"
         result = con.execute(text(sentencia))
+        print(sentencia)
         print(result.fetchall())
