@@ -34,12 +34,12 @@ El repositorio de este proyecto fue clonado en cada una de las intancias mencion
       2. Instalar Celery a través de pip
       3. Pararse en la carpeta 'backend' y ejecutar el comando 'celery -A tareas worker -l info' para inicializar el worker
 - NFS (https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04-es):
-    En el host: 
+    - En el host: 
         1. sudo apt install nfs-kernel-server
         2. sudo mkdir /var/nfs/general -p
         3. sudo chown nobody:nogroup /var/nfs/general
         4. sudo nano /etc/exports
-    En cada uno de los clientes (Las demás instancias): 
+    - En cada uno de los clientes (Las demás instancias): 
         1. sudo apt install nfs-common
         2. sudo mkdir -p /nfs/general
         3. sudo mkdir -p /nfs/home
