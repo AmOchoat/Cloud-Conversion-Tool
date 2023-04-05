@@ -10,7 +10,7 @@ Todos estos elementos se encuentran conectados por una VPC que fue denominada "v
 - NFS: 10.0.1.10
 
 De la misma manera hay dos instancias con IP pública que permiten realizar conexión HTTP a través de puertos configurados previamente en las reglas de firewall:
-- Front: 35.185.26.8
+- Front: 34.74.58.202
 - Web-Server: 35.237.111.106
 
 El repositorio de este proyecto fue clonado en cada una de las intancias mencionadas (Exceptuando Cloud SQL). A continuación se explicará el proceso de clonación y ejecución:
