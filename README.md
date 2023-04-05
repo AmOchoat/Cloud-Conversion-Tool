@@ -52,7 +52,7 @@ El repositorio de este proyecto fue clonado en cada una de las intancias mencion
 		  5. sudo mount host_ip:/home /nfs/home
    
 
-- Video Explicación: TODO
+- Video Explicación: https://youtu.be/0Nk_Rx44LrM
 - Documento de análisis de pruebas de carga: TODO
 - Documento de arquitectura: TODO
 
