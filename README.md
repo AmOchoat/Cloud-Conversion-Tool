@@ -14,12 +14,8 @@ De la misma manera hay dos instancias con IP pública que permiten realizar cone
 - Web-Server: 35.237.111.106
 
 El repositorio de este proyecto fue clonado en cada una de las intancias mencionadas (Exceptuando Cloud SQL). A continuación se explicará el proceso de clonación y ejecución:
-
-- Cloud SQL:
-      1. Crear instancia Postgresql y asociarla a la VPC previamente creada
-      2. Conectarse a la instancia a través psql client en cualquiera de las VMS de Compute Engine
-      3. Ejecutar la sentencia: 'CREATE DATABASE tasks;'
 - Web-Server: 
+
       1. Clonar repo
       2. Instalar virtualenv a través de pip
       3. Pararse en la carpeta 'backend', crear y ejecutar el entorno virtual
@@ -27,6 +23,7 @@ El repositorio de este proyecto fue clonado en cada una de las intancias mencion
       5. ejecutar del backend en un servidor WGSI a través del comando 'gunicorn -b 0.0.0.0:8000 app:app'
       6. En otra consola pararse en la carpeta backed y ejecutar el comando: 'redis-server --protected-mode no' para iniciarlizar el message broker.
 - Front:
+
       1. Clonar repo
       2. Instalar node.js
       3. Ejecutar el comando: 'sudo apt-get update && sudo apt-get install apache2 -y'
@@ -35,26 +32,29 @@ El repositorio de este proyecto fue clonado en cada una de las intancias mencion
       7. Copiar la build a la carpeta de apache: 'sudo cp -r Cloud-Entrega-1/front/build/* /var/www/html/'
       9. sudo /etc/init.d/apache2 restart
 - Worker: 
+
       1. Clonar repo
       2. Instalar Celery a través de pip
       3. Pararse en la carpeta 'backend' y ejecutar el comando 'celery -A tareas worker -l info' para inicializar el worker
 - NFS (https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04-es):
     - En el host: 
-        1. sudo apt install nfs-kernel-server
-        2. sudo mkdir /var/nfs/general -p
-        3. sudo chown nobody:nogroup /var/nfs/general
-        4. sudo nano /etc/exports
+
+		  1. sudo apt install nfs-kernel-server
+		  2. sudo mkdir /var/nfs/general -p
+		  3. sudo chown nobody:nogroup /var/nfs/general
+		  4. sudo nano /etc/exports
     - En cada uno de los clientes (Las demás instancias): 
-        1. sudo apt install nfs-common
-        2. sudo mkdir -p /nfs/general
-        3. sudo mkdir -p /nfs/home
-        4. sudo mount host_ip:/var/nfs/general /nfs/general
-        5. sudo mount host_ip:/home /nfs/home
+
+		  1. sudo apt install nfs-common
+		  2. sudo mkdir -p /nfs/general
+		  3. sudo mkdir -p /nfs/home
+		  4. sudo mount host_ip:/var/nfs/general /nfs/general
+		  5. sudo mount host_ip:/home /nfs/home
    
 
-Video Explicación: TODO
-Documento de análisis de pruebas de carga: TODO
-Documento de arquitectura: TODO
+- Video Explicación: TODO
+- Documento de análisis de pruebas de carga: TODO
+- Documento de arquitectura: TODO
 
 Integrantes: 
 
