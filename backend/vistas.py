@@ -8,6 +8,7 @@ from sqlalchemy import desc, asc , or_ , and_
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from modelos import *
 from flask import send_file
+from google.cloud import pubsub_v1
 
 from tareas import *
 
@@ -15,6 +16,17 @@ directorio = "/nfs/general/"
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
+
+# Crea una instancia del cliente de Pub/Sub con las credenciales
+publisher = pubsub_v1.PublisherClient.from_service_account_json("pub_sub.json")
+
+
+def enviar_mensaje(pubsub_topic, mensaje):
+    # Publica el mensaje en el tema
+    future = publisher.publish(pubsub_topic, mensaje.encode('utf-8'))
+    # Espera a que se complete la publicación (opcional)
+    future.result()
+
 
 '''
 Login de un Usuario
@@ -133,11 +145,11 @@ class VistaTasks(Resource):
         db.session.add(nueva_tarea)
  
         if extension_convertir == ".zip":
-            comprimir_zip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_zip {directorio + "uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
         elif extension_convertir == ".gz":
-            comprimir_gzip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_gz {directorio + "uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
         elif extension_convertir == ".bz2":
-            comprimir_bz2.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_bz2 {directorio + "uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
         else:
             return "Esta extensión no esta soportada en la aplicación"
         db.session.commit()
