@@ -80,3 +80,8 @@ def comprimir_bz2(filename, zipname, new_path,fecha_id):
         sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
         con.execute(text(sentencia))
         con.commit()
+
+
+if __name__ == "__main__":
+    recibir_mensaje("compresion_archivo-sub")
+
