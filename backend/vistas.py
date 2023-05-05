@@ -11,10 +11,15 @@ from flask import send_file
 
 from tareas import *
 
+from google.cloud import storage
+
 directorio = "/nfs/general/"
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
+
+storage_client = storage.Client()
+bucket_name = "cloud-entrega-4"
 
 '''
 Login de un Usuario
@@ -112,8 +117,9 @@ class VistaTasks(Resource):
         file = request.files['file']
         
         nombre_arch, extension = os.path.splitext(file.filename)
-        
-        file.save( directorio + 'uploads/' + file.filename)
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob('uploads/'+file.filename)
+        blob.upload_from_file(file)
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         email= usuario.email
         fecha_act= datetime.now()
@@ -132,14 +138,14 @@ class VistaTasks(Resource):
 
         db.session.add(nueva_tarea)
  
-        if extension_convertir == ".zip":
-            comprimir_zip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
-        elif extension_convertir == ".gz":
-            comprimir_gzip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
-        elif extension_convertir == ".bz2":
-            comprimir_bz2.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
-        else:
-            return "Esta extensión no esta soportada en la aplicación"
+        #if extension_convertir == ".zip":
+        #    comprimir_zip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+        #elif extension_convertir == ".gz":
+        #    comprimir_gzip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+        #elif extension_convertir == ".bz2":
+        #    comprimir_bz2.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+        #else:
+        #    return "Esta extensión no esta soportada en la aplicación"
         db.session.commit()
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         usuario.tareas.append(nueva_tarea)
