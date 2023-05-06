@@ -27,8 +27,7 @@ def recibir_mensaje(pubsub_subscription):
         tarea = mensaje_split[0]
         filename = mensaje_split[1]
         zipname = mensaje_split[2]
-        new_path = mensaje_split[3]
-        fecha_id = mensaje_split[4]
+        fecha_id = mensaje_split[3]
         
         # Ejecuta la tarea correspondiente
         if tarea == 'comprimir_zip':
@@ -56,7 +55,8 @@ def recibir_mensaje(pubsub_subscription):
 def comprimir_zip(bucket_name, filename, zipname, fecha_id):
     bucket = storage_client.get_bucket(bucket_name)
 
-    print("zipname", zipname)
+    print("zipname:", zipname)
+    print("filename:", filename)
     
     blob = bucket.blob(filename)
     
@@ -76,43 +76,53 @@ def comprimir_zip(bucket_name, filename, zipname, fecha_id):
         #con.execute(text(sentencia))
         #con.commit()
         
-def comprimir_gzip(filename, gzipname, bucket_name, fecha_id):
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(filename)
-
-    with blob.open('rb') as file:
-        content = file.read()
-        compressed_content = BytesIO()
-        with gzip.GzipFile(fileobj=compressed_content, mode='wb') as gzip_file:
-            gzip_file.write(content)
-        compressed_content.seek(0)
-
-        gzip_blob = bucket.blob(gzipname)
-        gzip_blob.upload_from_file(compressed_content, content_type='application/gzip')
-
-    with engine.connect() as con:
-        fecha_processed = fecha_id.replace("T", " ")        
-        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-        con.execute(text(sentencia))
-        con.commit()
-
-
-def comprimir_bz2(filename, bz2name, bucket_name, fecha_id):
-    print("Comprimir bz2")
+def comprimir_gzip(bucket_name, filename, zipname, fecha_id):
     bucket = storage_client.get_bucket(bucket_name)
+
+    print("zipname:", zipname)
+    print("filename:", filename)
+
+
     blob = bucket.blob(filename)
-    data = blob.download_as_bytes()
 
-    compressed_data = bz2.compress(data)
+    with BytesIO() as zip_buffer:
+        with gzip.GzipFile(mode='wb', fileobj=zip_buffer) as zip_file:
+            data = blob.download_as_string()
+            zip_file.write(data)
 
-    new_blob = bucket.blob(bz2name)
-    new_blob.upload_from_string(compressed_data)
+        blob_zip = bucket.blob(zipname)
+        blob_zip.upload_from_string(zip_buffer.getvalue())
 
-    with engine.connect() as con:
-        fecha_processed = fecha_id.replace("T", " ")        
-        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-        con.execute(text(sentencia))
-        con.commit()
+    #with engine.connect() as con:
+        #fecha_processed = fecha_id.replace("T", " ")
+        #sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        #con.execute(text(sentencia))
+        #con.commit()
+
+
+def comprimir_bz2(bucket_name, filename, zipname, fecha_id):
+
+    bucket = storage_client.get_bucket(bucket_name)
+
+    print("zipname:", zipname)
+    print("filename:", filename)
+
+
+    blob = bucket.blob(filename)
+
+    with BytesIO() as zip_buffer:
+        with bz2.BZ2File(mode='wb', filename=zip_buffer) as zip_file:
+            data = blob.download_as_string()
+            zip_file.write(data)
+
+        blob_zip = bucket.blob(zipname)
+        blob_zip.upload_from_string(zip_buffer.getvalue())
+
+    #with engine.connect() as con:
+        #fecha_processed = fecha_id.replace("T", " ")
+        #sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        #con.execute(text(sentencia))
+        #con.commit()
 
 
 if __name__ == "__main__":
