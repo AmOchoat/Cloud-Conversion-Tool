@@ -202,7 +202,7 @@ class VistaFile(Resource):
 
                 # Descargar el archivo y devolverlo
                 contenido = blob.download_as_string()
-                return send_file(BytesIO(contenido), attachment_filename=nombre_archivo+task_con_archivo[0][0].extension_convertir, as_attachment=True)
+                return send_file(BytesIO(contenido), download_name=nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
         else:
@@ -217,6 +217,6 @@ class VistaFile(Resource):
 
                 # Descargar el archivo y devolverlo
                 contenido = blob.download_as_string()
-                return send_file(BytesIO(contenido), attachment_filename=nombre_archivo+task_con_archivo[0][0].extension_original, as_attachment=True)
+                return send_file(BytesIO(contenido), download_name=nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
