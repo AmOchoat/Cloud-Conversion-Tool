@@ -25,7 +25,7 @@ storage_client = storage.Client()
 bucket_name = "cloud-entrega-4"
 
 # Crea una instancia del cliente de Pub/Sub con las credenciales
-publisher = pubsub_v1.PublisherClient.from_service_account_json("pub_sub.json")
+publisher = pubsub_v1.PublisherClient.from_service_account_json("gs://cloud-entrega-4/jsons/pub_sub.json")
 
 def enviar_mensaje(pubsub_topic, mensaje):
     # Publica el mensaje en el tema
