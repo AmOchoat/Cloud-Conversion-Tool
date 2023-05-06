@@ -8,9 +8,10 @@ import zipfile
 import bz2
 import gzip
 from config import *
+from io import BytesIO
 
 
-engine = create_engine(SQLALCHEMY_DATABASE_URI)
+#engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
 storage_client = storage.Client()
 bucket_name = "cloud-entrega-4"
@@ -31,11 +32,11 @@ def recibir_mensaje(pubsub_subscription):
         
         # Ejecuta la tarea correspondiente
         if tarea == 'comprimir_zip':
-            comprimir_zip(filename, zipname, new_path, fecha_id)
+            comprimir_zip(bucket_name, filename, zipname, fecha_id)
         if tarea == 'comprimir_gzip':
-            comprimir_gzip(filename, zipname, new_path, fecha_id)
+            comprimir_gzip(filename, zipname, bucket_name, fecha_id)
         if tarea == 'comprimir_bz2':
-            comprimir_bz2(filename, zipname, new_path, fecha_id)
+            comprimir_bz2(filename, zipname, bucket_name, fecha_id)
 
     
     # Crea una instancia de suscripción
@@ -52,47 +53,66 @@ def recibir_mensaje(pubsub_subscription):
             print(f'Error al recibir mensajes: {e}')
 
 
-def comprimir_zip(filename, zipname, new_path,fecha_id):
-    print("Comprimir zip")
+def comprimir_zip(bucket_name, filename, zipname, fecha_id):
     bucket = storage_client.get_bucket(bucket_name)
+
+    print("zipname", zipname)
+    
+    blob = bucket.blob(filename)
+    
+    with BytesIO() as zip_buffer:
+        with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+            data = blob.download_as_string()
+            zip_file.writestr(filename, data)
+
+
+
+        blob_zip = bucket.blob(zipname)
+        blob_zip.upload_from_string(zip_buffer.getvalue())
+
+    #with engine.connect() as con:
+        #fecha_processed = fecha_id.replace("T", " ")
+        #sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        #con.execute(text(sentencia))
+        #con.commit()
+        
+def comprimir_gzip(filename, gzipname, bucket_name, fecha_id):
+    bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(filename)
 
     with blob.open('rb') as file:
-        zfile = zipfile.ZipFile(new_path + '/' + zipname, 'w')
-        zfile.writestr(filename, file.read(), compress_type=zipfile.ZIP_DEFLATED)
-        zfile.close()
+        content = file.read()
+        compressed_content = BytesIO()
+        with gzip.GzipFile(fileobj=compressed_content, mode='wb') as gzip_file:
+            gzip_file.write(content)
+        compressed_content.seek(0)
 
-    zfile.write(filename, compress_type = zipfile.ZIP_DEFLATED)
-    zfile.close()
+        gzip_blob = bucket.blob(gzipname)
+        gzip_blob.upload_from_file(compressed_content, content_type='application/gzip')
+
     with engine.connect() as con:
         fecha_processed = fecha_id.replace("T", " ")        
         sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
         con.execute(text(sentencia))
         con.commit()
-        
-def comprimir_gzip(filename, zipname, new_path,fecha_id):
-    print("Comprimir gzip")
-    #old_file= open(filename)
-    #gzipFile = gzip.open(new_path + '/' + zipname, 'w')
-    #gzipFile.write(old_file.read())
-    #gzipFile.close()
-    #with engine.connect() as con:
-    #    fecha_processed = fecha_id.replace("T", " ")
-    #    sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-    #    con.execute(text(sentencia))
-    #    con.commit()
 
-def comprimir_bz2(filename, zipname, new_path,fecha_id):
+
+def comprimir_bz2(filename, bz2name, bucket_name, fecha_id):
     print("Comprimir bz2")
-    #old_file= open(filename)
-    #bz2File = open(new_path + '/' + zipname, 'w')
-    #bz2File.write(bz2.compress(old_file.read()))
-    #bz2File.close()
-    #with engine.connect() as con:
-    #    fecha_processed = fecha_id.replace("T", " ")
-    #    sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-    #    con.execute(text(sentencia))
-    #    con.commit()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(filename)
+    data = blob.download_as_bytes()
+
+    compressed_data = bz2.compress(data)
+
+    new_blob = bucket.blob(bz2name)
+    new_blob.upload_from_string(compressed_data)
+
+    with engine.connect() as con:
+        fecha_processed = fecha_id.replace("T", " ")        
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        con.execute(text(sentencia))
+        con.commit()
 
 
 if __name__ == "__main__":

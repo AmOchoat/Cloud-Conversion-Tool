@@ -148,11 +148,11 @@ class VistaTasks(Resource):
         db.session.add(nueva_tarea)
  
         if extension_convertir == ".zip":
-            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_zip {directorio + "uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_zip {"uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
         elif extension_convertir == ".gz":
-            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_gz {directorio + "uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_gz {"uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
         elif extension_convertir == ".bz2":
-            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_bz2 {directorio + "uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_bz2 {"uploads/"+nombre_arch+extension} {nombre_arch+"compressed"+request.form.get("extension_convertir")} {directorio + "result"} {fecha_act}')
         else:
             return "Esta extensión no esta soportada en la aplicación"
         db.session.commit()
