@@ -54,9 +54,14 @@ def recibir_mensaje(pubsub_subscription):
 
 def comprimir_zip(filename, zipname, new_path,fecha_id):
     print("Comprimir zip")
-    #zfile = zipfile.ZipFile(new_path + '/' + zipname, 'w')
     bucket = storage_client.get_bucket(bucket_name)
-    zfile = bucket.blob(filename)
+    blob = bucket.blob(filename)
+
+    with blob.open('rb') as file:
+        zfile = zipfile.ZipFile(new_path + '/' + zipname, 'w')
+        zfile.writestr(filename, file.read(), compress_type=zipfile.ZIP_DEFLATED)
+        zfile.close()
+
     zfile.write(filename, compress_type = zipfile.ZIP_DEFLATED)
     zfile.close()
     with engine.connect() as con:
