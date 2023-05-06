@@ -56,7 +56,7 @@ def comprimir_zip(filename, zipname, new_path,fecha_id):
     print("Comprimir zip")
     #zfile = zipfile.ZipFile(new_path + '/' + zipname, 'w')
     bucket = storage_client.get_bucket(bucket_name)
-    blob = bucket.blob(filename)
+    zfile = bucket.blob(filename)
     zfile.write(filename, compress_type = zipfile.ZIP_DEFLATED)
     zfile.close()
     with engine.connect() as con:
