@@ -15,11 +15,11 @@ from io import BytesIO
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
 
-storage_client = storage.Client.from_service_account_json("gs://cloud-entrega-4/jsons/entrega-3-CloudStorage.json")
+storage_client = storage.Client.from_service_account_json("entrega-3-CloudStorage.json")
 bucket_name = "cloud-entrega-4"
 
 # Crea una instancia del cliente de Pub/Sub con las credenciales
-publisher = pubsub_v1.PublisherClient.from_service_account_json("gs://cloud-entrega-4/jsons/pub_sub.json")
+publisher = pubsub_v1.PublisherClient.from_service_account_json("pub_sub.json")
 
 def enviar_mensaje(pubsub_topic, mensaje):
     # Publica el mensaje en el tema
