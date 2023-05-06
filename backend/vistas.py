@@ -12,16 +12,10 @@ from google.cloud import pubsub_v1
 from google.cloud import storage
 from io import BytesIO
 
-from tareas import *
-
-from google.cloud import storage
-
-directorio = "/nfs/general/"
-
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
 
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("gs://cloud-entrega-4/jsons/entrega-3-CloudStorage.json")
 bucket_name = "cloud-entrega-4"
 
 # Crea una instancia del cliente de Pub/Sub con las credenciales

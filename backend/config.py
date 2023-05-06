@@ -11,8 +11,6 @@ OUR_SECRET = os.getenv("SECRET", "tasks")
 OUR_JWTSECRET = os.getenv("JWTSECRET", "tasks")
 OUR_ALGO = os.getenv("JWT_ALGORITHM" ,"HS256")
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'gs://cloud-entrega-4/jsons/entrega-3-CloudStorage.json'
-
 DEBUG = False
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(
     OUR_USER, OUR_PW, OUR_HOST, OUR_PORT, OUR_DB)
