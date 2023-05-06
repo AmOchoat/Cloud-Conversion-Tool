@@ -11,7 +11,7 @@ from config import *
 from io import BytesIO
 
 
-#engine = create_engine(SQLALCHEMY_DATABASE_URI)
+engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
 storage_client = storage.Client()
 bucket_name = "cloud-entrega-4"
@@ -70,11 +70,11 @@ def comprimir_zip(bucket_name, filename, zipname, fecha_id):
         blob_zip = bucket.blob(zipname)
         blob_zip.upload_from_string(zip_buffer.getvalue())
 
-    #with engine.connect() as con:
-        #fecha_processed = fecha_id.replace("T", " ")
-        #sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-        #con.execute(text(sentencia))
-        #con.commit()
+    with engine.connect() as con:
+        fecha_processed = fecha_id.replace("T", " ")
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        con.execute(text(sentencia))
+        con.commit()
         
 def comprimir_gzip(bucket_name, filename, zipname, fecha_id):
     bucket = storage_client.get_bucket(bucket_name)
@@ -93,11 +93,11 @@ def comprimir_gzip(bucket_name, filename, zipname, fecha_id):
         blob_zip = bucket.blob(zipname)
         blob_zip.upload_from_string(zip_buffer.getvalue())
 
-    #with engine.connect() as con:
-        #fecha_processed = fecha_id.replace("T", " ")
-        #sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-        #con.execute(text(sentencia))
-        #con.commit()
+    with engine.connect() as con:
+        fecha_processed = fecha_id.replace("T", " ")
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        con.execute(text(sentencia))
+        con.commit()
 
 
 def comprimir_bz2(bucket_name, filename, zipname, fecha_id):
@@ -118,11 +118,11 @@ def comprimir_bz2(bucket_name, filename, zipname, fecha_id):
         blob_zip = bucket.blob(zipname)
         blob_zip.upload_from_string(zip_buffer.getvalue())
 
-    #with engine.connect() as con:
-        #fecha_processed = fecha_id.replace("T", " ")
-        #sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
-        #con.execute(text(sentencia))
-        #con.commit()
+    with engine.connect() as con:
+        fecha_processed = fecha_id.replace("T", " ")
+        sentencia = f"UPDATE tarea SET estado = 'processed' WHERE fecha = '{fecha_processed}';"
+        con.execute(text(sentencia))
+        con.commit()
 
 
 if __name__ == "__main__":
