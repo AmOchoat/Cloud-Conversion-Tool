@@ -32,10 +32,12 @@ def recibir_mensaje(pubsub_subscription):
         # Ejecuta la tarea correspondiente
         if tarea == 'comprimir_zip':
             comprimir_zip(bucket_name, filename, zipname, fecha_id)
-        if tarea == 'comprimir_gzip':
+        elif tarea == 'comprimir_gzip':
             comprimir_gzip(filename, zipname, bucket_name, fecha_id)
-        if tarea == 'comprimir_bz2':
+        elif tarea == 'comprimir_bz2':
             comprimir_bz2(filename, zipname, bucket_name, fecha_id)
+
+        message.ack()
 
     
     # Crea una instancia de suscripción
@@ -64,8 +66,6 @@ def comprimir_zip(bucket_name, filename, zipname, fecha_id):
         with zipfile.ZipFile(zip_buffer, "w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             data = blob.download_as_string()
             zip_file.writestr(filename, data)
-
-
 
         blob_zip = bucket.blob(zipname)
         blob_zip.upload_from_string(zip_buffer.getvalue())

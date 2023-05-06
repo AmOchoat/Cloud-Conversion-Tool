@@ -9,6 +9,8 @@ from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identit
 from modelos import *
 from flask import send_file
 from google.cloud import pubsub_v1
+from google.cloud import storage
+from io import BytesIO
 
 from tareas import *
 
@@ -21,6 +23,7 @@ tarea_schema = TareaSchema()
 
 storage_client = storage.Client()
 bucket_name = "cloud-entrega-4"
+
 # Crea una instancia del cliente de Pub/Sub con las credenciales
 publisher = pubsub_v1.PublisherClient.from_service_account_json("pub_sub.json")
 
@@ -190,12 +193,30 @@ class VistaFile(Resource):
         if "compressed" in nombre_archivo:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_final==nombre_archivo))).limit(1).all()]
             if len(task_con_archivo[0]) > 0:
-                return send_file('result/'+nombre_archivo+task_con_archivo[0][0].extension_convertir)
+                # Conexión a Google Cloud Storage
+                storage_client = storage.Client()
+                bucket = storage_client.get_bucket(bucket_name)
+
+                # Obtener la referencia del archivo en el bucket
+                blob = bucket.blob('results/'+nombre_archivo+task_con_archivo[0][0].extension_convertir)
+
+                # Descargar el archivo y devolverlo
+                contenido = blob.download_as_string()
+                return send_file(BytesIO(contenido), attachment_filename=nombre_archivo+task_con_archivo[0][0].extension_convertir, as_attachment=True)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
         else:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_ori==nombre_archivo))).limit(1).all()]
             if len(task_con_archivo[0]) > 0:
-                return send_file( directorio + 'uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
+                # Conexión a Google Cloud Storage
+                storage_client = storage.Client()
+                bucket = storage_client.get_bucket(bucket_name)
+
+                # Obtener la referencia del archivo en el bucket
+                blob = bucket.blob('uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
+
+                # Descargar el archivo y devolverlo
+                contenido = blob.download_as_string()
+                return send_file(BytesIO(contenido), attachment_filename=nombre_archivo+task_con_archivo[0][0].extension_original, as_attachment=True)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
