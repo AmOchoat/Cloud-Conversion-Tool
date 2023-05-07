@@ -8,13 +8,24 @@ from sqlalchemy import desc, asc , or_ , and_
 from flask_jwt_extended import jwt_required, create_access_token,get_jwt_identity
 from modelos import *
 from flask import send_file
-
-from tareas import *
-
-directorio = "/nfs/general/"
+from google.cloud import pubsub_v1
+from google.cloud import storage
+from io import BytesIO
 
 usuario_schema = UsuarioSchema()
 tarea_schema = TareaSchema()
+
+storage_client = storage.Client.from_service_account_json("entrega-3-CloudStorage.json")
+bucket_name = "cloud-entrega-4"
+
+# Crea una instancia del cliente de Pub/Sub con las credenciales
+publisher = pubsub_v1.PublisherClient.from_service_account_json("pub_sub.json")
+
+def enviar_mensaje(pubsub_topic, mensaje):
+    # Publica el mensaje en el tema
+    future = publisher.publish(pubsub_topic, mensaje.encode('utf-8'))
+    # Espera a que se complete la publicación (opcional)
+    #future.result()
 
 '''
 Login de un Usuario
@@ -112,8 +123,9 @@ class VistaTasks(Resource):
         file = request.files['file']
         
         nombre_arch, extension = os.path.splitext(file.filename)
-        
-        file.save( directorio + 'uploads/' + file.filename)
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob('uploads/'+file.filename)
+        blob.upload_from_file(file)
         usuario = Usuario.query.get_or_404(get_jwt_identity())
         email= usuario.email
         fecha_act= datetime.now()
@@ -133,11 +145,11 @@ class VistaTasks(Resource):
         db.session.add(nueva_tarea)
  
         if extension_convertir == ".zip":
-            comprimir_zip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_zip {"uploads/"+nombre_arch+extension} {"results/"+ nombre_arch+"compressed"+request.form.get("extension_convertir")} {fecha_act}')
         elif extension_convertir == ".gz":
-            comprimir_gzip.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_gz {"uploads/"+nombre_arch+extension} {"results/" + nombre_arch+"compressed"+request.form.get("extension_convertir")} {fecha_act}')
         elif extension_convertir == ".bz2":
-            comprimir_bz2.delay( directorio + "uploads/"+nombre_arch+extension, nombre_arch+"compressed"+request.form.get('extension_convertir'), directorio + 'result', fecha_act)
+            enviar_mensaje('projects/entrega-3-cloud/topics/compresion_archivo', f'comprimir_bz2 {"uploads/"+nombre_arch+extension} {"results/" + nombre_arch+"compressed"+request.form.get("extension_convertir")} {fecha_act}')
         else:
             return "Esta extensión no esta soportada en la aplicación"
         db.session.commit()
@@ -175,12 +187,30 @@ class VistaFile(Resource):
         if "compressed" in nombre_archivo:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_final==nombre_archivo))).limit(1).all()]
             if len(task_con_archivo[0]) > 0:
-                return send_file('result/'+nombre_archivo+task_con_archivo[0][0].extension_convertir)
+                # Conexión a Google Cloud Storage
+                storage_client = storage.Client()
+                bucket = storage_client.get_bucket(bucket_name)
+
+                # Obtener la referencia del archivo en el bucket
+                blob = bucket.blob('results/'+nombre_archivo+task_con_archivo[0][0].extension_convertir)
+
+                # Descargar el archivo y devolverlo
+                contenido = blob.download_as_string()
+                return send_file(BytesIO(contenido), download_name=nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"
         else:
             task_con_archivo=[Tarea.query.filter(and_(Tarea.usuarios==get_jwt_identity(), or_(Tarea.nombre_archivo_ori==nombre_archivo))).limit(1).all()]
             if len(task_con_archivo[0]) > 0:
-                return send_file( directorio + 'uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
+                # Conexión a Google Cloud Storage
+                storage_client = storage.Client()
+                bucket = storage_client.get_bucket(bucket_name)
+
+                # Obtener la referencia del archivo en el bucket
+                blob = bucket.blob('uploads/'+nombre_archivo+task_con_archivo[0][0].extension_original)
+
+                # Descargar el archivo y devolverlo
+                contenido = blob.download_as_string()
+                return send_file(BytesIO(contenido), download_name=nombre_archivo+task_con_archivo[0][0].extension_original)
             else:
                 return "No se encontró ningún archivo relacionado a ninguna tarea del usuario"

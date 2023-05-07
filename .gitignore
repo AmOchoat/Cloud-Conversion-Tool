@@ -150,3 +150,6 @@ node_modules/
 result/
 uploads/
 *.rdb
+entrega-3-CloudStorage.json
+pub_sub.json
+test.py

@@ -52,9 +52,9 @@ El repositorio de este proyecto fue clonado en cada una de las intancias mencion
 		  5. sudo mount host_ip:/home /nfs/home
    
 
-- Video Explicación: TODO
-- Documento de análisis de pruebas de carga: TODO
-- Documento de arquitectura: TODO
+- Video Explicación: https://youtu.be/0Nk_Rx44LrM
+- Documento de análisis de pruebas de carga: https://uniandes-my.sharepoint.com/:w:/g/personal/am_ochoat_uniandes_edu_co/EdD_7cbEMNZNrxKCXC-tGMwBCbSlRvfkp5VS8DNQ0fAhLQ?e=UA6ktX
+- Documento de arquitectura: https://uniandes-my.sharepoint.com/:b:/g/personal/ee_ortiz_uniandes_edu_co/EcZHnH-GtYtCi5ykd2n8Bk8B1mq826egAa_73SPLchzhvA?e=kDpufh
 
 Integrantes: 
 
