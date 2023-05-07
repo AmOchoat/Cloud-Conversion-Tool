@@ -22,8 +22,6 @@ OUR_SECRET = os.getenv("SECRET", "tasks")
 OUR_JWTSECRET = os.getenv("JWTSECRET", "tasks")
 OUR_ALGO = os.getenv("JWT_ALGORITHM" ,"HS256")
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'gs://cloud-entrega-4/jsons/entrega-3-CloudStorage.json'
-
 DEBUG = False
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(
     OUR_USER, OUR_PW, OUR_HOST, OUR_PORT, OUR_DB)
@@ -35,12 +33,12 @@ JWT_ALGORITHM= OUR_ALGO
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("entrega-3-CloudStorage.json")
 bucket_name = "cloud-entrega-4"
 
 def recibir_mensaje(pubsub_subscription):
     # Crea una instancia del cliente de Pub/Sub con las credenciales
-    subscriber = pubsub_v1.SubscriberClient.from_service_account_json("gs://cloud-entrega-4/jsons/pub_sub.json")
+    subscriber = pubsub_v1.SubscriberClient.from_service_account_json("pub_sub.json")
     
     # Crea una función de callback para procesar los mensajes recibidos
     def callback(message):
