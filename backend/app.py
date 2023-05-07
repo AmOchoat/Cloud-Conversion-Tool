@@ -5,6 +5,9 @@ from vistas import *
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS, cross_origin
 
+import pdb
+pdb.set_trace()
+
 app = create_app('default')
 CORS(app)
 cors = CORS(app, resource={
