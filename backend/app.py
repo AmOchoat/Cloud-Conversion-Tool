@@ -4,9 +4,6 @@ from modelos import *
 from vistas import *
 from flask_jwt_extended import JWTManager
 
-import pdb
-pdb.set_trace()
-
 app = create_app('default')
 app_context = app.app_context()
 app_context.push()
