@@ -62,7 +62,7 @@ const SignUp = () => {
       password_confirmation: formObject.get('password_confirmation'),
       email: formObject.get('password_confirmation'),
     });
-    const response = await fetch('http://35.237.111.106:8000/api/auth/signup', {
+    const response = await fetch('http://34.160.186.126/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
