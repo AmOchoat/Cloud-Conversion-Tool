@@ -20,4 +20,4 @@ RUN apt install libpq-dev python3-dev -y
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Ejecutar con gunicorn
-CMD ["python3", "tareas.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "tareas:app"]
