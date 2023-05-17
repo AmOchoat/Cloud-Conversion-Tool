@@ -1,60 +1,32 @@
-# Cloud-Entrega-3
+# Cloud-Entrega-4
 
 Ejecición de la aplicación:
 
-En la construcción de la solución se utilizaron 4 máquinas virtuales de Compute Engine y una instancia de Cloud SQL con postgres como manejador de bases de datos.
+En la construcción de la solución se utilizaron tres grupos de instancias. 
+	Grupos de instancias de web-sever:
+		- instance-group-uno. Contiene al Web server en la zona us-east1-b
+		- instance-group-dos. Contiene al Web server en la zona us-east1-c
+	Grupos de instancias de worker:
+		- instance-group-workers. Contiene al Worker en la zona us-east1-b	
 
-Todos estos elementos se encuentran conectados por una VPC que fue denominada "vpc-1". A continuación aclararemos las direciones de IP's privadas determinadas para cada instancia dentro de la VPC:
-- Web-Server: 10.0.1.11
-- Worker: 10.0.1.15
-- NFS: 10.0.1.10
+Load balancer:
+	web-server-lb: Tiene asociados los dos grupos de instancias del web-server y redirige a sus repectivas IPs para hacer peticiones a la API. 
+		- IP del balanceador: 34.160.186.126. Esta IP es pública.
 
-De la misma manera hay dos instancias con IP pública que permiten realizar conexión HTTP a través de puertos configurados previamente en las reglas de firewall:
-- Front: 34.74.58.202
-- Web-Server: 35.237.111.106
 
-El repositorio de este proyecto fue clonado en cada una de las intancias mencionadas (Exceptuando Cloud SQL). A continuación se explicará el proceso de clonación y ejecución:
-- Web-Server: 
+Para este proyecto se crearon dos imágenes a partir del repositorio principal. Una imagen perteneciente al web-server y otra al worker. Estas imágenes fueron subidas a container registry y fueron usadas como imagen en nuestras instance template para lanzar nuestros grupos de instancias de web-server y worker.
 
-      1. Clonar repo
-      2. Instalar virtualenv a través de pip
-      3. Pararse en la carpeta 'backend', crear y ejecutar el entorno virtual
-      4. instalar todos los requerimientos del proyecto a través del comando: 'pip install -r requeriments.txt'
-      5. ejecutar del backend en un servidor WGSI a través del comando 'gunicorn -b 0.0.0.0:8000 app:app'
-      6. En otra consola pararse en la carpeta backed y ejecutar el comando: 'redis-server --protected-mode no' para iniciarlizar el message broker.
-- Front:
+En el archivo dockerfile de web-server fue configurado para que se lanzara en el puerto 8000 por medio de un servidor WGSE. Y previamente se intalaron todas las dependencias necesarias para que corriera la aplicación flask.
 
-      1. Clonar repo
-      2. Instalar node.js
-      3. Ejecutar el comando: 'sudo apt-get update && sudo apt-get install apache2 -y'
-      4. Pararse en la carpeta front y ejecutar: 'npm install'
-      6. Ejecutar el comando: 'npm run build'
-      7. Copiar la build a la carpeta de apache: 'sudo cp -r Cloud-Entrega-1/front/build/* /var/www/html/'
-      9. sudo /etc/init.d/apache2 restart
-- Worker: 
+En el archivo dockerfile de worker fue configurado para que se corriera el archivo tareas.py que escucha mediante la API de pub/sub los mensajes proveninetes de los susbriptores.
 
-      1. Clonar repo
-      2. Instalar Celery a través de pip
-      3. Pararse en la carpeta 'backend' y ejecutar el comando 'celery -A tareas worker -l info' para inicializar el worker
-- NFS (https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04-es):
-    - En el host: 
+Tanto web-server como worker utilizan la API de pub/sub. Uno implementa la finción enviar mensaje, el otro recibe el mensaje y lo confirma una vez se ha hecho el proceso de compresión.
 
-		  1. sudo apt install nfs-kernel-server
-		  2. sudo mkdir /var/nfs/general -p
-		  3. sudo chown nobody:nogroup /var/nfs/general
-		  4. sudo nano /etc/exports
-    - En cada uno de los clientes (Las demás instancias): 
+web-server y worker implementan la API de google cloud storage para guardar los archivos subidos y comprimidos.
 
-		  1. sudo apt install nfs-common
-		  2. sudo mkdir -p /nfs/general
-		  3. sudo mkdir -p /nfs/home
-		  4. sudo mount host_ip:/var/nfs/general /nfs/general
-		  5. sudo mount host_ip:/home /nfs/home
-   
-
-- Video Explicación: https://youtu.be/0Nk_Rx44LrM
-- Documento de análisis de pruebas de carga: https://uniandes-my.sharepoint.com/:w:/g/personal/am_ochoat_uniandes_edu_co/EdD_7cbEMNZNrxKCXC-tGMwBCbSlRvfkp5VS8DNQ0fAhLQ?e=UA6ktX
-- Documento de arquitectura: https://uniandes-my.sharepoint.com/:b:/g/personal/ee_ortiz_uniandes_edu_co/EcZHnH-GtYtCi5ykd2n8Bk8B1mq826egAa_73SPLchzhvA?e=kDpufh
+- Video Explicación: https://www.youtube.com/watch?v=VZXf26EIiCk
+- Entrega 4 - Arquitectura, conclusiones y consideraciones: https://github.com/AmOchoat/Cloud-Entrega-1/blob/main/Entrega%204/Entrega%204%20-%20Arquitectura%2C%20conclusiones%20y%20consideraciones.pdf
+- Plan de Pruebas y Analisis de Capacidad: https://github.com/AmOchoat/Cloud-Entrega-1/blob/main/Entrega%204/Plan%20de%20Pruebas%20y%20Analisis%20de%20Capacidad%20Entrega%204.pdf
 
 Integrantes: 
 

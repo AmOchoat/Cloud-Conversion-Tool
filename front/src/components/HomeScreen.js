@@ -84,7 +84,7 @@ export default function HomeScreen() {
     formData.append('order', '0');
 
     fetch(
-      `http://35.237.111.106:8000/api/tasks?max_tasks=${max_tasks}&order=${order}`,
+      `http://34.160.186.126/api/tasks?max_tasks=${max_tasks}&order=${order}`,
       {
         method: 'GET',
         headers: {
@@ -108,7 +108,7 @@ export default function HomeScreen() {
   async function handleDescargar(id, name) {
     console.log('XD');
 
-    fetch(`http://35.237.111.106:8000/api/files/${id}`, {
+    fetch(`http://34.160.186.126/api/files/${id}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,

@@ -11,6 +11,8 @@ WORKDIR /app
 # Copiar archivos
 COPY . /app
 
+COPY .env /app
+
 # Instalar psycopg2-binary
 RUN apt install libpq-dev python3-dev -y
 

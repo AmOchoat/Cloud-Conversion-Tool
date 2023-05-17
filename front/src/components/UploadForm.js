@@ -29,7 +29,7 @@ function UploadForm() {
     }
     console.log('token', accessToken);
     try {
-      const response = await fetch('http://35.237.111.106:8000/api/tasks', {
+      const response = await fetch('http://34.160.186.126/api/tasks', {
         method: 'POST',
         body: formData,
         headers: {
