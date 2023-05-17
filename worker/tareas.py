@@ -3,6 +3,7 @@ from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 from google.cloud import pubsub_v1
 from google.cloud import storage
+from flask import Flask, request
 
 import zipfile
 import bz2
@@ -11,6 +12,8 @@ from io import BytesIO
 
 import os
 from dotenv import load_dotenv
+
+app = Flask(__name__)
 
 load_dotenv()
 OUR_HOST = os.getenv("DB_HOST", "127.0.0.1")
@@ -35,6 +38,26 @@ engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
 storage_client = storage.Client.from_service_account_json("entrega-3-CloudStorage.json")
 bucket_name = "cloud-entrega-4"
+
+@app.route('/', methods=['POST'])
+def index():
+    envelope = request.get_json()
+    if not envelope:
+        msg = "no Pub/Sub message received"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(envelope, dict) or "message" not in envelope:
+        msg = "invalid Pub/Sub message format"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    pubsub_message = envelope["message"]
+
+    name = "World"
+
+    return("", 204)
+
 
 def recibir_mensaje(pubsub_subscription):
     # Crea una instancia del cliente de Pub/Sub con las credenciales
