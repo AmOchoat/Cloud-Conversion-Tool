@@ -15,4 +15,4 @@ COPY .env /app
 # Instalar dependencias
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "tareas.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
