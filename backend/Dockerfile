@@ -16,4 +16,4 @@ COPY .env /app
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Ejecutar con gunicorn y registrar errores en archivo de log
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "--error-logfile", "/app/error.log", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "--error-logfile", "/app/error.log", "--log-level", "debug", "app:app"]
