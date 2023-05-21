@@ -149,6 +149,7 @@ def comprimir_bz2(bucket_name, filename, zipname, fecha_id):
 @app.route("/", methods=["POST"])
 def index():
     envelope = request.get_json()
+
     if not envelope:
         msg = "no Pub/Sub message received"
         print(f"error: {msg}")
@@ -161,14 +162,16 @@ def index():
 
     pubsub_message = envelope["message"]
 
+    menssage = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+
+    print("MENSAJE", menssage)
+
     name = "World"
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
+    
+
     print(f"Hello {name}!")
 
     return ("", 204)
-
-if __name__ == "__main__":
-    recibir_mensaje("compresion_archivo-sub")
-    app.run(debug=True)
