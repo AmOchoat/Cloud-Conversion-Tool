@@ -55,9 +55,9 @@ def index():
 
     pubsub_message = envelope["message"]
 
-    name = "World"
+    print(pubsub_message)
 
-    return("", 204)
+    return("Corriendo", 204)
 #
 #
 #def recibir_mensaje(pubsub_subscription):
