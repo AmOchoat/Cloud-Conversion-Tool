@@ -1,3 +1,4 @@
+from flask import Flask, request
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 from google.cloud import pubsub_v1
@@ -7,9 +8,9 @@ import zipfile
 import bz2
 import gzip
 from io import BytesIO
-
 import os
 from dotenv import load_dotenv
+import base64
 
 load_dotenv()
 OUR_HOST = os.getenv("DB_HOST", "127.0.0.1")
@@ -34,6 +35,8 @@ engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
 storage_client = storage.Client.from_service_account_json("entrega-3-CloudStorage.json")
 bucket_name = "cloud-entrega-4"
+
+app = Flask(__name__)
 
 def recibir_mensaje(pubsub_subscription):
     # Crea una instancia del cliente de Pub/Sub con las credenciales
@@ -143,6 +146,29 @@ def comprimir_bz2(bucket_name, filename, zipname, fecha_id):
         con.execute(text(sentencia))
         con.commit()
 
+@app.route("/", methods=["POST"])
+def index():
+    envelope = request.get_json()
+    if not envelope:
+        msg = "no Pub/Sub message received"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(envelope, dict) or "message" not in envelope:
+        msg = "invalid Pub/Sub message format"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    pubsub_message = envelope["message"]
+
+    name = "World"
+    if isinstance(pubsub_message, dict) and "data" in pubsub_message:
+        name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+
+    print(f"Hello {name}!")
+
+    return ("", 204)
 
 if __name__ == "__main__":
     recibir_mensaje("compresion_archivo-sub")
+    app.run(debug=True)
