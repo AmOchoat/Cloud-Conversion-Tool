@@ -116,7 +116,7 @@ def comprimir_gzip(bucket_name, filename, gzname, fecha_id):
     blob = bucket.blob(filename)
     
     with BytesIO() as gz_buffer:
-        with gzip.GzipFile(filename=gzname, mode="wb", fileobj=xx) as gz_file:
+        with gzip.GzipFile(filename=gzname, mode="wb", fileobj=gz_buffer) as gz_file:
             data = blob.download_as_string()
             gz_file.write(data)
 
