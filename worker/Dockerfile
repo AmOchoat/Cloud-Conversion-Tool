@@ -17,4 +17,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY tareas.py ./
 
-CMD ["python", "tareas.py"]
+CMD ["python3", "tareas.py"]
