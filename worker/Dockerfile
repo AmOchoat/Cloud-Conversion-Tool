@@ -17,4 +17,5 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY tareas.py ./
 
-CMD ["python3", "tareas.py"]
+# Agregar servidor Gunicorn como punto de entrada
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 tareas:app
