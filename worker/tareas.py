@@ -77,7 +77,7 @@ def recibir_mensaje():
         # Ejecuta la tarea correspondiente
         if tarea == 'comprimir_zip':
             comprimir_zip(bucket_name, filename, zipname, fecha_id)
-        elif tarea == 'comprimir_gzip':
+        elif tarea == 'comprimir_gz':
             comprimir_gzip(filename, zipname, bucket_name, fecha_id)
         elif tarea == 'comprimir_bz2':
             comprimir_bz2(filename, zipname, bucket_name, fecha_id)
@@ -107,22 +107,21 @@ def comprimir_zip(bucket_name, filename, zipname, fecha_id):
         con.execute(text(sentencia))
         con.commit()
         
-def comprimir_gzip(bucket_name, filename, zipname, fecha_id):
+def comprimir_gzip(bucket_name, filename, gzname, fecha_id):
     bucket = storage_client.get_bucket(bucket_name)
 
-    print("zipname:", zipname)
+    print("gzname:", gzname)
     print("filename:", filename)
-
-
+    
     blob = bucket.blob(filename)
-
-    with BytesIO() as zip_buffer:
-        with gzip.GzipFile(mode='wb', fileobj=zip_buffer) as zip_file:
+    
+    with BytesIO() as gz_buffer:
+        with gzip.GzipFile(filename=gzname, mode="wb", fileobj=xx) as gz_file:
             data = blob.download_as_string()
-            zip_file.write(data)
+            gz_file.write(data)
 
-        blob_zip = bucket.blob(zipname)
-        blob_zip.upload_from_string(zip_buffer.getvalue())
+        blob_gz = bucket.blob(gzname)
+        blob_gz.upload_from_string(gz_buffer.getvalue())
 
     with engine.connect() as con:
         fecha_processed = fecha_id.replace("T", " ")
@@ -131,23 +130,21 @@ def comprimir_gzip(bucket_name, filename, zipname, fecha_id):
         con.commit()
 
 
-def comprimir_bz2(bucket_name, filename, zipname, fecha_id):
-
+def comprimir_bz2(bucket_name, filename, bz2name, fecha_id):
     bucket = storage_client.get_bucket(bucket_name)
 
-    print("zipname:", zipname)
+    print("bz2name:", bz2name)
     print("filename:", filename)
-
-
+    
     blob = bucket.blob(filename)
-
-    with BytesIO() as zip_buffer:
-        with bz2.BZ2File(mode='wb', filename=zip_buffer) as zip_file:
+    
+    with BytesIO() as bz2_buffer:
+        with bz2.BZ2File(bz2name, "wb", fileobj=bz2_buffer) as bz2_file:
             data = blob.download_as_string()
-            zip_file.write(data)
+            bz2_file.write(data)
 
-        blob_zip = bucket.blob(zipname)
-        blob_zip.upload_from_string(zip_buffer.getvalue())
+        blob_bz2 = bucket.blob(bz2name)
+        blob_bz2.upload_from_string(bz2_buffer.getvalue())
 
     with engine.connect() as con:
         fecha_processed = fecha_id.replace("T", " ")
