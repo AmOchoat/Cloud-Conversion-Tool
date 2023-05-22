@@ -1,5 +1,8 @@
 FROM ubuntu:20.04
 
+# Allow statements and log messages to immediately appear in the Cloud Run logs
+ENV PYTHONUNBUFFERED True
+
 RUN apt-get update && apt-get upgrade -y
 
 # Instalar Python3 y otras dependencias necesarias
