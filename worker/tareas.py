@@ -138,13 +138,16 @@ def comprimir_bz2(bucket_name, filename, bz2name, fecha_id):
     
     blob = bucket.blob(filename)
     
-    with BytesIO() as bz2_buffer:
-        with bz2.BZ2File(bz2name, "wb", fileobj=bz2_buffer) as bz2_file:
-            data = blob.download_as_string()
-            bz2_file.write(data)
+    with BytesIO() as data_buffer:
+        data = blob.download_as_string()
+        data_buffer.write(data)
 
-        blob_bz2 = bucket.blob(bz2name)
-        blob_bz2.upload_from_string(bz2_buffer.getvalue())
+        with BytesIO() as bz2_buffer:
+            with bz2.BZ2File(bz2_buffer, "wb") as bz2_file:
+                bz2_file.write(data_buffer.getvalue())
+
+            blob_bz2 = bucket.blob(bz2name)
+            blob_bz2.upload_from_string(bz2_buffer.getvalue())
 
     with engine.connect() as con:
         fecha_processed = fecha_id.replace("T", " ")
