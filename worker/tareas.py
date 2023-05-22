@@ -78,9 +78,9 @@ def recibir_mensaje():
         if tarea == 'comprimir_zip':
             comprimir_zip(bucket_name, filename, zipname, fecha_id)
         elif tarea == 'comprimir_gz':
-            comprimir_gzip(filename, zipname, bucket_name, fecha_id)
+            comprimir_gzip(bucket_name, filename, zipname, fecha_id)
         elif tarea == 'comprimir_bz2':
-            comprimir_bz2(filename, zipname, bucket_name, fecha_id)
+            comprimir_bz2(bucket_name, filename, zipname, fecha_id)
 
     return ("", 204)
 
