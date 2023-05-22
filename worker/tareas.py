@@ -44,7 +44,6 @@ bucket_name = "cloud-entrega-4"
 @app.route("/", methods=["POST"])
 def recibir_mensaje():
 
-    print("HOLA DIOS SOY YO DE NUEVO")
     
     envelope = request.get_json()
     if not envelope:
@@ -63,12 +62,22 @@ def recibir_mensaje():
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
-    
-    print(f"Hello {name}!")
+        # Extrae los parámetros de la tarea del mensaje
+        mensaje_split = name.split(' ')
+        tarea = mensaje_split[0]
+        filename = mensaje_split[1]
+        zipname = mensaje_split[2]
+        fecha_id = mensaje_split[3]
+        
+        # Ejecuta la tarea correspondiente
+        if tarea == 'comprimir_zip':
+            comprimir_zip(bucket_name, filename, zipname, fecha_id)
+        elif tarea == 'comprimir_gzip':
+            comprimir_gzip(filename, zipname, bucket_name, fecha_id)
+        elif tarea == 'comprimir_bz2':
+            comprimir_bz2(filename, zipname, bucket_name, fecha_id)
 
     return ("", 204)
-
-
 
 
 def comprimir_zip(bucket_name, filename, zipname, fecha_id):
