@@ -58,7 +58,6 @@ def recibir_mensaje():
 
     pubsub_message = envelope["message"]
 
-    name = "World"
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
@@ -68,6 +67,12 @@ def recibir_mensaje():
         filename = mensaje_split[1]
         zipname = mensaje_split[2]
         fecha_id = mensaje_split[3]
+
+        print("tarea:", tarea)
+        print("filename:", filename)
+        print("zipname:", zipname)
+        print("fecha_id:", fecha_id)
+
         
         # Ejecuta la tarea correspondiente
         if tarea == 'comprimir_zip':
