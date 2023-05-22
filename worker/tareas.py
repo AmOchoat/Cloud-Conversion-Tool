@@ -44,6 +44,8 @@ bucket_name = "cloud-entrega-4"
 @app.route("/", methods=["POST"])
 def recibir_mensaje():
 
+    print("HOLA DIOS SOY YO DE NUEVO")
+    
     envelope = request.get_json()
     if not envelope:
         msg = "no Pub/Sub message received"
