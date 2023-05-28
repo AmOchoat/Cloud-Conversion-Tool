@@ -1,8 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/auth-context';
-//prueba 2
 
-function UploadForm() {
+function UploadForm(props) {
   const [file, setFile] = useState(null);
   const [form, setForm] = useState({});
   const { accessToken } = useContext(AuthContext);
@@ -29,7 +28,7 @@ function UploadForm() {
     }
     console.log('token', accessToken);
     try {
-      const response = await fetch('http://34.160.186.126/api/tasks', {
+      const response = await fetch('https://img-proyecto2-iz6lkh27wq-uc.a.run.app/api/tasks', {
         method: 'POST',
         body: formData,
         headers: {
@@ -40,6 +39,7 @@ function UploadForm() {
 
       if (response.ok) {
         console.log('File uploaded successfully.');
+        props.handleSetRender()
       } else {
         console.error('Failed to upload file.');
       }

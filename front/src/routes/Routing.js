@@ -2,9 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeScreen from "../components/HomeScreen";
 import  React,{useContext} from 'react';
 import { AuthContext } from '../context/auth-context';
-import { Navigate } from "react-router-dom";
-
-import { Redirect } from 'react-router-dom';
 
 import SignIn from "../components/SignIn";
 import SignUp from "../components/SignUp";

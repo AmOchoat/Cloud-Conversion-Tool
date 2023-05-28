@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as Link_Navigation } from 'react-router-dom';
 import { green } from '@mui/material/colors';
 import { AuthContext } from '../context/auth-context';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
@@ -48,6 +49,8 @@ const SignUp = () => {
     contrasena: '',
   });
 
+  const navigate = useNavigate(); // Obtenemos la función de navegación
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -62,7 +65,7 @@ const SignUp = () => {
       password_confirmation: formObject.get('password_confirmation'),
       email: formObject.get('password_confirmation'),
     });
-    const response = await fetch('http://34.160.186.126/api/auth/signup', {
+    const response = await fetch('https://img-proyecto2-iz6lkh27wq-uc.a.run.app/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -78,7 +81,11 @@ const SignUp = () => {
     console.log('response_number: ', response_number);
 
     const data = await response.json();
-    login(data.access_token);
+
+    if (response.ok){
+      login(data.access_token);
+      navigate('/home');
+    }
   };
 
   return (

@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link as Link_Navigation } from 'react-router-dom';
 import { green } from '@mui/material/colors';
 import { AuthContext } from '../context/auth-context';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
@@ -48,6 +49,7 @@ export default function SignIn() {
     email: '',
     contrasena: '',
   });
+  const navigate = useNavigate(); // Obtenemos la función de navegación
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -61,7 +63,7 @@ export default function SignIn() {
       email: formObject.get('email'),
       password: formObject.get('password'),
     });
-    const response = await fetch('http://34.160.186.126/api/auth/login', {
+    const response = await fetch('https://img-proyecto2-iz6lkh27wq-uc.a.run.app/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -72,7 +74,12 @@ export default function SignIn() {
     const data = await response.json();
     console.log(data);
     console.log('data.access_token', data.access_token);
-    login(data.access_token);
+
+    // Verificamos si el login fue exitoso
+    if (response.ok){
+      login(data.access_token);
+      navigate('/home');
+    }
   };
 
   return (

@@ -10,7 +10,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
@@ -20,10 +19,6 @@ import { AuthContext } from '../context/auth-context';
 import UploadForm from './UploadForm';
 import { useState, useEffect } from 'react';
 import {
-  FormControl,
-  InputLabel,
-  Input,
-  FormHelperText,
   TextField,
 } from '@mui/material';
 
@@ -77,6 +72,15 @@ export default function HomeScreen() {
 
   const [tasks, setTasks] = useState([]);
 
+  // función para volver a renderizar el componente. Se llama cuando se sube un archivo
+  const [render, setRender] = useState(false);
+
+
+  const handleSetRender = () => {
+    setRender(!render);
+  };
+
+
   // use effect para fetch de las tasks
   useEffect(() => {
     const formData = new FormData();
@@ -84,7 +88,7 @@ export default function HomeScreen() {
     formData.append('order', '0');
 
     fetch(
-      `http://34.160.186.126/api/tasks?max_tasks=${max_tasks}&order=${order}`,
+      `https://img-proyecto2-iz6lkh27wq-uc.a.run.app/api/tasks?max_tasks=${max_tasks}&order=${order}`,
       {
         method: 'GET',
         headers: {
@@ -103,12 +107,12 @@ export default function HomeScreen() {
       .catch((error) => {
         console.error('Error:', error);
       });
-  }, [max_tasks, order]);
+  }, [max_tasks, order, render]);
 
   async function handleDescargar(id, name) {
     console.log('XD');
 
-    fetch(`http://34.160.186.126/api/files/${id}`, {
+    fetch(`https://img-proyecto2-iz6lkh27wq-uc.a.run.app/api/files/${id}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -122,8 +126,6 @@ export default function HomeScreen() {
         console.error('Error:', error);
       });
   }
-
-  const handleLogout = () => {};
 
   return (
     <ThemeProvider theme={theme}>
@@ -180,7 +182,7 @@ export default function HomeScreen() {
               spacing={2}
               justifyContent="center"
             >
-              <UploadForm />
+              <UploadForm handleSetRender = {handleSetRender}/>
               {/* <Button variant="contained">Subir un archivo</Button> */}
             </Stack>
           </Container>
@@ -220,7 +222,8 @@ export default function HomeScreen() {
           <Box sx={{ pt: 4 }}></Box>
 
           <Grid container spacing={4}>
-            {tasks?.map((task) => (
+            {tasks && tasks.length > 0 ? (
+              tasks?.map((task) => (
               <Grid item key={task} xs={12} sm={4} md={6}>
                 <Card
                   sx={{
@@ -273,7 +276,12 @@ export default function HomeScreen() {
                   </CardActions>
                 </Card>
               </Grid>
-            ))}
+            ))
+            ) : (
+              <Typography gutterBottom>
+                No hay tareas para mostrar
+              </Typography>
+            )}
           </Grid>
         </Container>
       </main>
